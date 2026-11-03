@@ -48,7 +48,7 @@
         function show(kind = 'all') {
             products.innerHTML = items.filter(item => kind === 'all' || item.kind === kind).map(item =>
                 `<article class="product">
-                    <a class="product-image-button" href="/collection.html" aria-label="View photos of ${item.name}">
+                    <a class="product-image-button" href="collection.html" aria-label="View photos of ${item.name}">
                         <img src="${item.photo}" alt="${item.photoAlt}">
                     </a>
                     <h3>${item.name}</h3>
