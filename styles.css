@@ -4,6 +4,11 @@
     box-sizing: border-box
 }
 
+/* Match the iPhone status-area background to the active header color. */
+html {
+    background: var(--navbar-background)
+}
+
 /* Keep explicitly hidden sections hidden despite other display rules. */
 [hidden] {
     display: none !important
@@ -21,6 +26,7 @@
     --active-background: #274c37;
     --navbar-background: #f1f5f2;
     --navbar-text: #1f4d36;
+    /* Separate badge colors distinguish graded cards from raw cards. */
     --graded-badge-background: #e4efe7;
     --graded-badge-border: #c5d6c9;
     --graded-badge-text: #1f4d36;
@@ -210,7 +216,7 @@ h2 {
     text-align: center
 }
 
-/* Preserve photo proportions and keep images within the viewport. */
+/* Preserve photo proportions and animate rotation and photo changes. */
 .slab-viewer figure img {
     display: block;
     width: auto;
@@ -221,10 +227,12 @@ h2 {
     transition: transform 180ms ease, opacity 180ms ease
 }
 
+/* Hide the current photo while the next photo loads for a soft transition. */
 .slab-viewer figure img.is-fading {
     opacity: 0
 }
 
+/* Disable photo transitions when reduced motion is preferred. */
 @media (prefers-reduced-motion: reduce) {
     .slab-viewer figure img {
         transition: none
@@ -473,7 +481,7 @@ h2 {
 /* Tighter header and product layout on phone-sized screens. */
 @media(max-width:460px) {
     .site-header {
-        padding-top: 18px;
+        padding-top: calc(18px + env(safe-area-inset-top, 0px));
         padding-bottom: 18px
     }
 

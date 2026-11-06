@@ -113,6 +113,8 @@
             document.title = `${card.detail} | Beans Jeans Card Club`;
             let currentPhoto = 0;
             let photoChangeId = 0;
+            // Keep the rotation setting consistent as the photo side changes.
+            let photoIsSideways = false;
 
             // Show the sales section only when verified records are available.
             if (Array.isArray(card.sales) && card.sales.length > 0) {
@@ -146,7 +148,7 @@
                 document.querySelector('.slab-info').append(salesSection);
             }
 
-            // Cycle through the selected card's photos with the previous and next buttons.
+            // Update the selected photo, its count, and its rotation state.
             function showPhoto(index, fade = false) {
                 currentPhoto = (index + photos.length) % photos.length;
                 const photo = photos[currentPhoto];
@@ -178,24 +180,29 @@
 
                 photoCount.textContent = `${currentPhoto + 1} of ${photos.length}`;
                 image.classList.remove('is-sideways', 'is-sideways-reversed');
-                rotateButton.setAttribute('aria-pressed', 'false');
-                rotateButton.setAttribute('aria-label', 'Rotate photo sideways');
-                rotateButton.title = 'Rotate photo sideways';
+                // Match the rotation direction to the front or back photo.
+                if (photoIsSideways) {
+                    image.classList.add(photos[currentPhoto].side === 'Back' ? 'is-sideways-reversed' : 'is-sideways');
+                }
+                const action = photoIsSideways ? 'Rotate photo upright' : 'Rotate photo sideways';
+                rotateButton.setAttribute('aria-pressed', String(photoIsSideways));
+                rotateButton.setAttribute('aria-label', action);
+                rotateButton.title = action;
             }
 
             if (selectedCard === 'marlon') {
                 rotateButton.hidden = false;
+                // Toggle rotation and apply the direction associated with each side.
                 rotateButton.addEventListener('click', () => {
-                    const isSideways = image.classList.contains('is-sideways') || image.classList.contains('is-sideways-reversed');
+                    photoIsSideways = !photoIsSideways;
                     image.classList.remove('is-sideways', 'is-sideways-reversed');
-                    if (!isSideways) {
+                    if (photoIsSideways) {
                         image.classList.add(photos[currentPhoto].side === 'Back' ? 'is-sideways-reversed' : 'is-sideways');
                     }
-                    const isNowSideways = !isSideways;
-                    const action = isNowSideways ? 'Rotate photo upright' : 'Rotate photo sideways';
+                    const action = photoIsSideways ? 'Rotate photo upright' : 'Rotate photo sideways';
                     rotateButton.setAttribute('aria-label', action);
                     rotateButton.title = action;
-                    rotateButton.setAttribute('aria-pressed', String(isNowSideways));
+                    rotateButton.setAttribute('aria-pressed', String(photoIsSideways));
                 });
             }
 
