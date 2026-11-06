@@ -31,6 +31,7 @@
     <!-- The complete collection appears here when no card is selected. -->
     <main id="collection-browser">
         <h2>Card Collection</h2>
+        <p class="collection-subtitle">A curated collection</p>
         <div class="filters" id="collection-filters"></div>
         <div class="products" id="collection-products"></div>
     </main>
@@ -45,6 +46,7 @@
             <button id="previous-photo" class="slab-arrow" type="button" aria-label="Previous photo">&lsaquo;</button>
             <figure>
                 <img id="slab-image" alt="">
+                <figcaption class="photo-count" id="photo-count" aria-live="polite"></figcaption>
                 <button id="rotate-photo" class="side-rotate-button" type="button" aria-label="Rotate photo sideways" title="Rotate photo sideways" aria-pressed="false" hidden>
                     <svg class="rotate-icon" width="20" height="20" fill="currentColor" aria-hidden="true"><use href="#rotate-icon"></use></svg>
                 </button>
@@ -52,8 +54,6 @@
             <button id="next-photo" class="slab-arrow" type="button" aria-label="Next photo">&rsaquo;</button>
         </section>
     </main>
-    <footer>Beans Jeans Card Club</footer>
-
     <script src="cards.js"></script>
     <script>
         // The shared catalog provides data for both collection and detail views.
@@ -83,6 +83,7 @@
                             <a class="product-image-button" href="collection.html?card=${item.id}" aria-label="View photos of ${item.name}">
                                 <img src="${item.photos[0].src}" alt="${item.photos[0].alt}">
                             </a>
+                            <span class="grade-badge">${item.grade}</span>
                             <h3>${item.name}</h3>
                             <div class="detail">${item.detail}</div>
                         </article>
@@ -105,6 +106,7 @@
             cardDetails.hidden = false;
             const photos = card.photos;
             const image = document.querySelector('#slab-image');
+            const photoCount = document.querySelector('#photo-count');
             const rotateButton = document.querySelector('#rotate-photo');
             document.querySelector('#slab-grade').textContent = `${card.grade} · ${card.detail}`;
             document.querySelector('#slab-title').textContent = card.title;
@@ -149,6 +151,7 @@
                 currentPhoto = (index + photos.length) % photos.length;
                 image.src = photos[currentPhoto].src;
                 image.alt = photos[currentPhoto].alt;
+                photoCount.textContent = `${currentPhoto + 1} of ${photos.length}`;
                 image.classList.remove('is-sideways', 'is-sideways-reversed');
                 rotateButton.setAttribute('aria-pressed', 'false');
                 rotateButton.setAttribute('aria-label', 'Rotate photo sideways');
