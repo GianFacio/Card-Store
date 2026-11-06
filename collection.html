@@ -31,7 +31,6 @@
     <!-- The complete collection appears here when no card is selected. -->
     <main id="collection-browser">
         <h2>Card Collection</h2>
-        <p class="collection-subtitle">A curated collection</p>
         <div class="filters" id="collection-filters"></div>
         <div class="products" id="collection-products"></div>
     </main>
@@ -83,7 +82,7 @@
                             <a class="product-image-button" href="collection.html?card=${item.id}" aria-label="View photos of ${item.name}">
                                 <img src="${item.photos[0].src}" alt="${item.photos[0].alt}">
                             </a>
-                            <span class="grade-badge">${item.grade}</span>
+                            <span class="grade-badge ${item.grade === 'Raw' ? 'grade-badge-raw' : 'grade-badge-graded'}">${item.grade}</span>
                             <h3>${item.name}</h3>
                             <div class="detail">${item.detail}</div>
                         </article>
@@ -113,6 +112,7 @@
             document.querySelector('.slab-viewer').setAttribute('aria-label', `${card.detail} card photos`);
             document.title = `${card.detail} | Beans Jeans Card Club`;
             let currentPhoto = 0;
+            let photoChangeId = 0;
 
             // Show the sales section only when verified records are available.
             if (Array.isArray(card.sales) && card.sales.length > 0) {
@@ -147,10 +147,35 @@
             }
 
             // Cycle through the selected card's photos with the previous and next buttons.
-            function showPhoto(index) {
+            function showPhoto(index, fade = false) {
                 currentPhoto = (index + photos.length) % photos.length;
-                image.src = photos[currentPhoto].src;
-                image.alt = photos[currentPhoto].alt;
+                const photo = photos[currentPhoto];
+                const changeId = ++photoChangeId;
+                const updateImage = () => {
+                    if (changeId !== photoChangeId) return;
+                    image.onload = () => {
+                        if (changeId === photoChangeId) {
+                            requestAnimationFrame(() => image.classList.remove('is-fading'));
+                        }
+                    };
+                    image.onerror = () => {
+                        if (changeId === photoChangeId) {
+                            image.classList.remove('is-fading');
+                            console.error(`Unable to load card photo: ${photo.src}`);
+                        }
+                    };
+                    image.src = photo.src;
+                    image.alt = photo.alt;
+                };
+
+                if (fade && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    image.classList.add('is-fading');
+                    window.setTimeout(updateImage, 180);
+                } else {
+                    image.classList.remove('is-fading');
+                    updateImage();
+                }
+
                 photoCount.textContent = `${currentPhoto + 1} of ${photos.length}`;
                 image.classList.remove('is-sideways', 'is-sideways-reversed');
                 rotateButton.setAttribute('aria-pressed', 'false');
@@ -176,8 +201,8 @@
 
             showPhoto(0);
             if (photos.length > 1) {
-                document.querySelector('#previous-photo').addEventListener('click', () => showPhoto(currentPhoto - 1));
-                document.querySelector('#next-photo').addEventListener('click', () => showPhoto(currentPhoto + 1));
+                document.querySelector('#previous-photo').addEventListener('click', () => showPhoto(currentPhoto - 1, true));
+                document.querySelector('#next-photo').addEventListener('click', () => showPhoto(currentPhoto + 1, true));
             } else {
                 document.querySelector('#previous-photo').hidden = true;
                 document.querySelector('#next-photo').hidden = true;

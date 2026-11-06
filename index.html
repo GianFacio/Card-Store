@@ -28,7 +28,6 @@
     <!-- Grade filters are generated from the card catalog. -->
     <main id="shop">
         <h2>Card Collection</h2>
-        <p class="collection-subtitle">A curated collection</p>
         <div class="filters" id="filters"></div>
         <div class="products" id="products"></div>
 
@@ -53,7 +52,7 @@
                     <a class="product-image-button" href="collection.html?card=${item.id}" aria-label="View photos of ${item.name}">
                         <img src="${item.photos[0].src}" alt="${item.photos[0].alt}">
                     </a>
-                    <span class="grade-badge">${item.grade}</span>
+                    <span class="grade-badge ${item.grade === 'Raw' ? 'grade-badge-raw' : 'grade-badge-graded'}">${item.grade}</span>
                     <h3>${item.name}</h3>
                     <div class="detail">${item.detail}</div>
                 </article>`

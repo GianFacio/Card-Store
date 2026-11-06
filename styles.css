@@ -20,7 +20,13 @@
     --control-background: #fff;
     --active-background: #274c37;
     --navbar-background: #f1f5f2;
-    --navbar-text: #1f4d36
+    --navbar-text: #1f4d36;
+    --graded-badge-background: #e4efe7;
+    --graded-badge-border: #c5d6c9;
+    --graded-badge-text: #1f4d36;
+    --raw-badge-background: #f2f4f1;
+    --raw-badge-border: #dfe5dc;
+    --raw-badge-text: #65756a
 }
 
 /* Color overrides used when dark mode is selected. */
@@ -34,7 +40,13 @@
     --control-background: #24323e;
     --active-background: #3d7652;
     --navbar-background: #101b14;
-    --navbar-text: #d6e8d9
+    --navbar-text: #d6e8d9;
+    --graded-badge-background: #315b42;
+    --graded-badge-border: #3d7652;
+    --graded-badge-text: #e6f0e8;
+    --raw-badge-background: #26332c;
+    --raw-badge-border: #536474;
+    --raw-badge-text: #b7c5ba
 }
 
 /* Base font, theme colors, and full-height page layout. */
@@ -133,13 +145,6 @@ h2 {
     margin-bottom: 8px
 }
 
-/* Short subtitle that adds context beneath the collection heading. */
-.collection-subtitle {
-    margin: 0;
-    color: var(--muted-color);
-    font-size: 15px
-}
-
 /* Card details and photo viewer side by side on wide screens. */
 .slab-showcase {
     display: grid;
@@ -213,7 +218,17 @@ h2 {
     max-height: min(72vh, 760px);
     margin: 0 auto;
     object-fit: contain;
-    transition: transform 180ms ease
+    transition: transform 180ms ease, opacity 180ms ease
+}
+
+.slab-viewer figure img.is-fading {
+    opacity: 0
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .slab-viewer figure img {
+        transition: none
+    }
 }
 
 /* Small photo position label for multi-photo card details. */
@@ -375,12 +390,23 @@ h2 {
     padding: 5px 9px;
     border: 1px solid var(--control-border);
     border-radius: 999px;
-    background: var(--navbar-background);
     color: var(--text-color);
     font-size: 11px;
     font-weight: bold;
     letter-spacing: 0.5px;
     line-height: 1
+}
+
+.grade-badge-graded {
+    border-color: var(--graded-badge-border);
+    background: var(--graded-badge-background);
+    color: var(--graded-badge-text)
+}
+
+.grade-badge-raw {
+    border-color: var(--raw-badge-border);
+    background: var(--raw-badge-background);
+    color: var(--raw-badge-text)
 }
 
 /* Cardholder detail styling below the product name. */
