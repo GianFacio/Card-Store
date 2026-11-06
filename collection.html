@@ -183,9 +183,11 @@
                             <a class="product-image-button" href="collection.html?card=${encodeURIComponent(item.id)}" aria-label="View photos of ${window.escapeStoreHTML(item.name)}">
                             <img src="${window.escapeStoreHTML(item.photos[0].src)}" alt="${window.escapeStoreHTML(item.photos[0].alt)}" loading="${index === 0 ? 'eager' : 'lazy'}" fetchpriority="${index === 0 ? 'high' : 'auto'}" decoding="async">
                             </a>
-                            <span class="grade-badge ${item.grade === 'Raw' ? 'grade-badge-raw' : item.grade === 'PSA 10' ? 'grade-badge-psa10' : 'grade-badge-graded'}">${window.escapeStoreHTML(item.grade)}</span>
+                            <div class="product-meta">
+                                <span class="grade-badge ${item.grade === 'Raw' ? 'grade-badge-raw' : item.grade === 'PSA 10' ? 'grade-badge-psa10' : 'grade-badge-graded'}">${window.escapeStoreHTML(item.grade)}</span>
+                                <div class="detail">${window.escapeStoreHTML(item.detail)}</div>
+                            </div>
                             <h3>${window.escapeStoreHTML(item.name)}</h3>
-                            <div class="detail">${window.escapeStoreHTML(item.detail)}</div>
                         </article>
                     `).join('');
             }

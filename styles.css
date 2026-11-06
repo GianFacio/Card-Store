@@ -841,7 +841,7 @@ h2 {
 /* Product name text size and spacing. */
 .product h3 {
     font-size: 15px;
-    margin: 12px 0 4px
+    margin: 8px 0 4px
 }
 
 /* Compact grade label distinguishes slabs from raw cards at a glance. */
@@ -856,6 +856,24 @@ h2 {
     font-weight: bold;
     letter-spacing: 0.5px;
     line-height: 1
+}
+
+/* Keep the player name below the grade, with the card title underneath. */
+.product-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 10px
+}
+
+.product-meta .grade-badge {
+    margin-top: 0
+}
+
+.product-meta .detail {
+    margin: 0;
+    padding: 0
 }
 
 .grade-badge-graded {
