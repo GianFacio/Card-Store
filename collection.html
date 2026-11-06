@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Card Collection | Beans Jeans Card Club</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Warm the database host connection before the card list and photos load. -->
+    <link rel="preconnect" href="https://tmskcpzbcszpxydrpepj.supabase.co" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
@@ -14,15 +17,24 @@
     <header class="site-header">
         <div class="site-header-inner">
             <a class="site-brand" href="index.html">Beans Jeans Card Club</a>
-            <button type="button" class="btn-outline theme-secondary btn-icon theme-toggle" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
-                <svg class="bi" width="16" height="16" fill="currentColor" aria-hidden="true"><use href="#circle-half"></use></svg>
-            </button>
+            <div class="header-actions">
+                <button type="button" class="btn-outline theme-secondary btn-icon theme-toggle" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
+                    <i class="bi bi-circle-half header-icon" aria-hidden="true"></i>
+                </button>
+                <button type="button" id="admin-access-toggle" class="btn-outline theme-secondary btn-icon theme-toggle" aria-label="Admin sign in" title="Admin sign in">
+                    <svg class="header-icon header-lock-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4M4.5 7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7zM8 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/>
+                    </svg>
+                </button>
+                <button type="button" id="add-card-toggle" class="btn-outline theme-secondary btn-icon theme-toggle" aria-label="Add a card" title="Add a card" hidden>
+                    <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                    </svg>
+                </button>
+            </div>
         </div>
     </header>
     <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <symbol id="circle-half" viewBox="0 0 16 16">
-            <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16" />
-        </symbol>
         <symbol id="rotate-icon" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z" />
             <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
@@ -39,12 +51,81 @@
         <div class="slab-info">
             <p class="slab-grade" id="slab-grade"></p>
             <h1 id="slab-title"></h1>
-            <a class="collection-link" href="collection.html">Back to cards</a>
+            <div class="detail-actions">
+                <a class="collection-link" href="collection.html">Back to cards</a>
+                <button id="edit-card-toggle" class="filter" type="button" hidden>Edit card</button>
+            </div>
+            <section id="card-edit-panel" class="card-edit-panel" hidden>
+                <form id="card-edit-form" class="admin-form">
+                    <h2>Edit card</h2>
+                    <label>Card name
+                        <textarea id="edit-card-name" rows="2" required></textarea>
+                    </label>
+                    <label>Player or card detail
+                        <input id="edit-card-detail" required>
+                    </label>
+                    <label>Grade
+                        <select id="edit-card-grade" required>
+                            <option value="Raw">Raw</option>
+                            <option value="PSA 10">PSA 10</option>
+                            <option value="PSA 9">PSA 9</option>
+                            <option value="PSA 8">PSA 8</option>
+                            <option value="PSA 7">PSA 7</option>
+                            <option value="PSA 6">PSA 6</option>
+                            <option value="PSA 5">PSA 5</option>
+                            <option value="PSA 4">PSA 4</option>
+                            <option value="PSA 3">PSA 3</option>
+                            <option value="PSA 2">PSA 2</option>
+                            <option value="PSA 1">PSA 1</option>
+                        </select>
+                    </label>
+                    <label>Card title
+                        <input id="edit-card-title" required>
+                    </label>
+                    <label class="photo-rotation-toggle">
+                        <input id="edit-card-rotation-enabled" type="checkbox">
+                        Horizontal card — show rotate control
+                    </label>
+                    <!-- Existing photos can be replaced in place or removed without a checkbox. -->
+                    <fieldset class="photo-edit-list">
+                        <legend>Current photos — click to replace</legend>
+                        <div id="edit-existing-photos" class="photo-slots existing-photos">
+                            <div class="photo-slot existing-photo-slot">
+                                <span class="photo-slot-title" id="edit-front-title">Front</span>
+                                <button class="photo-slot-picker" type="button" data-file-input="edit-front-photo" aria-controls="edit-front-photo" aria-label="Choose or replace front photo">
+                                    <span class="photo-slot-preview" data-preview-for="edit-front-photo">Choose front</span>
+                                    <span class="photo-slot-action">Choose photo</span>
+                                </button>
+                                <input id="edit-front-photo" class="visually-hidden-file" type="file" accept="image/jpeg,image/png,image/webp" tabindex="-1">
+                                <button class="photo-remove-control" type="button" data-photo-side="Front" aria-pressed="false">Remove front</button>
+                            </div>
+                            <div class="photo-slot existing-photo-slot">
+                                <span class="photo-slot-title" id="edit-back-title">Back</span>
+                                <button class="photo-slot-picker" type="button" data-file-input="edit-back-photo" aria-controls="edit-back-photo" aria-label="Choose or replace back photo">
+                                    <span class="photo-slot-preview" data-preview-for="edit-back-photo">Choose back</span>
+                                    <span class="photo-slot-action">Choose photo</span>
+                                </button>
+                                <input id="edit-back-photo" class="visually-hidden-file" type="file" accept="image/jpeg,image/png,image/webp" tabindex="-1">
+                                <button class="photo-remove-control" type="button" data-photo-side="Back" aria-pressed="false">Remove back</button>
+                            </div>
+                        </div>
+                        <small class="photo-help-text">Click a photo to replace it. JPEG, PNG, or WebP, up to 5 MB each.</small>
+                    </fieldset>
+                    <div class="admin-actions">
+                        <button class="filter active" type="submit">Save</button>
+                        <button id="cancel-card-edit" class="filter" type="button">Cancel</button>
+                        <button id="delete-card" class="filter delete-card-button" type="button">Delete</button>
+                    </div>
+                    <p id="card-edit-message" role="status" aria-live="polite"></p>
+                </form>
+            </section>
         </div>
         <section class="slab-viewer" aria-label="Card photos">
             <button id="previous-photo" class="slab-arrow" type="button" aria-label="Previous photo">&lsaquo;</button>
             <figure>
-                <img id="slab-image" alt="">
+                <button id="zoom-photo" class="photo-zoom-trigger" type="button" aria-label="Zoom in on card photo">
+                    <img id="slab-image" alt="">
+                </button>
                 <figcaption class="photo-count" id="photo-count" aria-live="polite"></figcaption>
                 <button id="rotate-photo" class="side-rotate-button" type="button" aria-label="Rotate photo sideways" title="Rotate photo sideways" aria-pressed="false" hidden>
                     <svg class="rotate-icon" width="20" height="20" fill="currentColor" aria-hidden="true"><use href="#rotate-icon"></use></svg>
@@ -53,38 +134,58 @@
             <button id="next-photo" class="slab-arrow" type="button" aria-label="Next photo">&rsaquo;</button>
         </section>
     </main>
-    <script src="cards.js"></script>
+    <dialog id="photo-zoom-dialog" class="photo-zoom-dialog" aria-label="Zoomed card photo">
+        <button id="close-photo-zoom" class="photo-zoom-close" type="button" aria-label="Close zoomed photo">&times;</button>
+        <img id="photo-zoom-image" alt="">
+    </dialog>
+    <!-- Match the sign-out confirmation before performing an irreversible card deletion. -->
+    <dialog id="delete-card-dialog" class="store-modal store-destructive-dialog" aria-labelledby="delete-card-title" aria-describedby="delete-card-message">
+        <div class="store-modal-content">
+            <div class="store-modal-header">
+                <h2 id="delete-card-title">Delete card?</h2>
+            </div>
+            <p id="delete-card-message"></p>
+            <form method="dialog" class="store-modal-actions">
+                <button type="submit" class="store-modal-button store-modal-cancel" value="cancel">Cancel</button>
+                <button type="submit" class="store-modal-button store-modal-confirm" value="delete">Delete</button>
+            </form>
+        </div>
+    </dialog>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="store-data.js"></script>
+    <script src="store-admin-tools.js"></script>
+    <script src="admin-access.js"></script>
     <script>
-        // The shared catalog provides data for both collection and detail views.
-        const cards = window.cardCatalog;
-        const selectedCard = new URLSearchParams(window.location.search).get('card');
-        const card = selectedCard && Object.prototype.hasOwnProperty.call(cards, selectedCard)
-            ? cards[selectedCard]
-            : null;
-        const collectionBrowser = document.querySelector('#collection-browser');
-        const cardDetails = document.querySelector('#card-details');
+        // Load the current catalog for the collection and detail views.
+        (async function () {
+            const items = await window.loadStoreCards();
+            const selectedCard = new URLSearchParams(window.location.search).get('card');
+            const card = selectedCard ? items.find(item => item.id === selectedCard) : null;
+            const collectionBrowser = document.querySelector('#collection-browser');
+            const cardDetails = document.querySelector('#card-details');
 
-        if (!selectedCard || !card) {
+            if (!selectedCard || !card) {
             const products = document.querySelector('#collection-products');
             const filters = document.querySelector('#collection-filters');
-            const items = Object.entries(cards).map(([id, item]) => ({ id, ...item }));
             const grades = ['all', ...new Set(items.map(item => item.grade))];
 
             filters.innerHTML = grades.map(grade =>
                 `<button class="filter${grade === 'all' ? ' active' : ''}" data-kind="${grade}">${grade === 'all' ? 'All cards' : grade}</button>`
             ).join('');
 
+            // Prioritize the first visible card and defer offscreen photos without reducing quality.
             function showCollection(grade = 'all') {
                 products.innerHTML = items
                     .filter(item => grade === 'all' || item.grade === grade)
-                    .map(item => `
+                    .map((item, index) => `
                         <article class="product">
-                            <a class="product-image-button" href="collection.html?card=${item.id}" aria-label="View photos of ${item.name}">
-                                <img src="${item.photos[0].src}" alt="${item.photos[0].alt}">
+                            <a class="product-image-button" href="collection.html?card=${encodeURIComponent(item.id)}" aria-label="View photos of ${window.escapeStoreHTML(item.name)}">
+                            <img src="${window.escapeStoreHTML(item.photos[0].src)}" alt="${window.escapeStoreHTML(item.photos[0].alt)}" loading="${index === 0 ? 'eager' : 'lazy'}" fetchpriority="${index === 0 ? 'high' : 'auto'}" decoding="async">
                             </a>
-                            <span class="grade-badge ${item.grade === 'Raw' ? 'grade-badge-raw' : 'grade-badge-graded'}">${item.grade}</span>
-                            <h3>${item.name}</h3>
-                            <div class="detail">${item.detail}</div>
+                            <span class="grade-badge ${item.grade === 'Raw' ? 'grade-badge-raw' : item.grade === 'PSA 10' ? 'grade-badge-psa10' : 'grade-badge-graded'}">${window.escapeStoreHTML(item.grade)}</span>
+                            <h3>${window.escapeStoreHTML(item.name)}</h3>
+                            <div class="detail">${window.escapeStoreHTML(item.detail)}</div>
                         </article>
                     `).join('');
             }
@@ -100,11 +201,14 @@
                 document.title = 'Card Collection | Beans Jeans Card Club';
             }
             showCollection();
-        } else {
+            } else {
             collectionBrowser.hidden = true;
             cardDetails.hidden = false;
             const photos = card.photos;
             const image = document.querySelector('#slab-image');
+            const zoomButton = document.querySelector('#zoom-photo');
+            const zoomDialog = document.querySelector('#photo-zoom-dialog');
+            const zoomImage = document.querySelector('#photo-zoom-image');
             const photoCount = document.querySelector('#photo-count');
             const rotateButton = document.querySelector('#rotate-photo');
             document.querySelector('#slab-grade').textContent = `${card.grade} · ${card.detail}`;
@@ -114,6 +218,10 @@
             let currentPhoto = 0;
             let photoChangeId = 0;
             // Keep the rotation setting consistent as the photo side changes.
+            const hasSavedRotationSetting = photos.some(photo => typeof photo.rotationEnabled === 'boolean');
+            let rotationEnabled = hasSavedRotationSetting
+                ? photos.some(photo => photo.rotationEnabled === true)
+                : selectedCard === 'marlon';
             let photoIsSideways = false;
 
             // Show the sales section only when verified records are available.
@@ -152,6 +260,7 @@
             function showPhoto(index, fade = false) {
                 currentPhoto = (index + photos.length) % photos.length;
                 const photo = photos[currentPhoto];
+                const side = photo.side || (currentPhoto === 0 ? 'Front' : 'Back');
                 const changeId = ++photoChangeId;
                 const updateImage = () => {
                     if (changeId !== photoChangeId) return;
@@ -168,6 +277,9 @@
                     };
                     image.src = photo.src;
                     image.alt = photo.alt;
+                    zoomImage.src = photo.src;
+                    zoomImage.alt = photo.alt;
+                    zoomButton.setAttribute('aria-label', `Zoom in on ${side.toLowerCase()} photo`);
                 };
 
                 if (fade && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -178,11 +290,14 @@
                     updateImage();
                 }
 
-                photoCount.textContent = `${currentPhoto + 1} of ${photos.length}`;
+                photoCount.textContent = `${side} · ${currentPhoto + 1} of ${photos.length}`;
                 image.classList.remove('is-sideways', 'is-sideways-reversed');
+                zoomImage.classList.remove('is-sideways', 'is-sideways-reversed');
                 // Match the rotation direction to the front or back photo.
                 if (photoIsSideways) {
-                    image.classList.add(photos[currentPhoto].side === 'Back' ? 'is-sideways-reversed' : 'is-sideways');
+                    const rotationClass = side === 'Back' ? 'is-sideways-reversed' : 'is-sideways';
+                    image.classList.add(rotationClass);
+                    zoomImage.classList.add(rotationClass);
                 }
                 const action = photoIsSideways ? 'Rotate photo upright' : 'Rotate photo sideways';
                 rotateButton.setAttribute('aria-pressed', String(photoIsSideways));
@@ -190,23 +305,30 @@
                 rotateButton.title = action;
             }
 
-            if (selectedCard === 'marlon') {
-                rotateButton.hidden = false;
-                // Toggle rotation and apply the direction associated with each side.
-                rotateButton.addEventListener('click', () => {
-                    photoIsSideways = !photoIsSideways;
-                    image.classList.remove('is-sideways', 'is-sideways-reversed');
-                    if (photoIsSideways) {
-                        image.classList.add(photos[currentPhoto].side === 'Back' ? 'is-sideways-reversed' : 'is-sideways');
-                    }
-                    const action = photoIsSideways ? 'Rotate photo upright' : 'Rotate photo sideways';
-                    rotateButton.setAttribute('aria-label', action);
-                    rotateButton.title = action;
-                    rotateButton.setAttribute('aria-pressed', String(photoIsSideways));
-                });
-            }
+            rotateButton.hidden = !rotationEnabled;
+            // Toggle rotation and apply the direction associated with each side.
+            rotateButton.addEventListener('click', () => {
+                photoIsSideways = !photoIsSideways;
+                image.classList.remove('is-sideways', 'is-sideways-reversed');
+                zoomImage.classList.remove('is-sideways', 'is-sideways-reversed');
+                if (photoIsSideways) {
+                    const side = photos[currentPhoto].side || (currentPhoto === 0 ? 'Front' : 'Back');
+                    const rotationClass = side === 'Back' ? 'is-sideways-reversed' : 'is-sideways';
+                    image.classList.add(rotationClass);
+                    zoomImage.classList.add(rotationClass);
+                }
+                const action = photoIsSideways ? 'Rotate photo upright' : 'Rotate photo sideways';
+                rotateButton.setAttribute('aria-label', action);
+                rotateButton.title = action;
+                rotateButton.setAttribute('aria-pressed', String(photoIsSideways));
+            });
 
             showPhoto(0);
+            zoomButton.addEventListener('click', () => zoomDialog.showModal());
+            document.querySelector('#close-photo-zoom').addEventListener('click', () => zoomDialog.close());
+            zoomDialog.addEventListener('click', event => {
+                if (event.target === zoomDialog) zoomDialog.close();
+            });
             if (photos.length > 1) {
                 document.querySelector('#previous-photo').addEventListener('click', () => showPhoto(currentPhoto - 1, true));
                 document.querySelector('#next-photo').addEventListener('click', () => showPhoto(currentPhoto + 1, true));
@@ -214,7 +336,233 @@
                 document.querySelector('#previous-photo').hidden = true;
                 document.querySelector('#next-photo').hidden = true;
             }
-        }
+
+            const editToggle = document.querySelector('#edit-card-toggle');
+            const editPanel = document.querySelector('#card-edit-panel');
+            const editForm = document.querySelector('#card-edit-form');
+            const editMessage = document.querySelector('#card-edit-message');
+            const existingPhotoList = document.querySelector('#edit-existing-photos');
+            const frontPhotoInput = document.querySelector('#edit-front-photo');
+            const backPhotoInput = document.querySelector('#edit-back-photo');
+            const rotationToggle = document.querySelector('#edit-card-rotation-enabled');
+            const resetEditPhotoSlots = window.setupCardPhotoSlotInputs(editForm);
+            const existingPhotoSlots = [...existingPhotoList.querySelectorAll('.existing-photo-slot')];
+
+            // Match photos by their saved side, while retaining positional fallback for older records.
+            function getPhotoSlots() {
+                const assignedIndexes = new Set();
+                return ['Front', 'Back'].map((side, position) => {
+                    let index = card.photos.findIndex((photo, photoIndex) =>
+                        !assignedIndexes.has(photoIndex) && photo.side?.toLowerCase() === side.toLowerCase());
+                    if (index < 0 && card.photos[position] && !assignedIndexes.has(position)) index = position;
+                    if (index < 0) return { side, photo: null, index: -1 };
+                    assignedIndexes.add(index);
+                    return { side, photo: card.photos[index], index };
+                });
+            }
+
+            // Hide the inline editor as soon as the admin session ends.
+            function setEditAccess(isAdmin) {
+                editToggle.hidden = !isAdmin;
+                if (!isAdmin) editPanel.hidden = true;
+            }
+
+            // Reuse the visible photo slots so each current image doubles as its replacement picker.
+            function populateEditForm() {
+                document.querySelector('#edit-card-name').value = card.name;
+                document.querySelector('#edit-card-detail').value = card.detail;
+                document.querySelector('#edit-card-grade').value = card.grade;
+                document.querySelector('#edit-card-title').value = card.title;
+                rotationToggle.checked = rotationEnabled;
+
+                getPhotoSlots().forEach(({ side, photo, index }, position) => {
+                    const slot = existingPhotoSlots[position];
+                    const title = slot.querySelector('.photo-slot-title');
+                    title.textContent = side;
+                    const preview = slot.querySelector('.photo-slot-preview');
+                    const action = slot.querySelector('.photo-slot-action');
+                    const removeButton = slot.querySelector('.photo-remove-control');
+                    preview.replaceChildren();
+                    if (photo) {
+                        const imagePreview = document.createElement('img');
+                        imagePreview.src = photo.src;
+                        imagePreview.alt = `${side} of ${card.detail}`;
+                        imagePreview.loading = 'lazy';
+                        preview.append(imagePreview);
+                    } else {
+                        preview.textContent = `No ${side.toLowerCase()} photo`;
+                    }
+                    action.textContent = photo ? 'Click to replace' : 'Choose photo';
+                    removeButton.dataset.photoIndex = String(index);
+                    removeButton.disabled = !photo;
+                    removeButton.setAttribute('aria-pressed', 'false');
+                    removeButton.textContent = `Remove ${side.toLowerCase()}`;
+                    slot.classList.remove('is-marked-for-removal');
+                });
+            }
+
+            // Keep the removal buttons labeled consistently while marking the selected photo.
+            existingPhotoList.querySelectorAll('.photo-remove-control').forEach(button => {
+                button.addEventListener('click', () => {
+                    const isRemoving = button.getAttribute('aria-pressed') !== 'true';
+                    if (!isRemoving) return;
+                    const input = button.dataset.photoSide === 'Front' ? frontPhotoInput : backPhotoInput;
+                    if (input.files[0]) {
+                        input.value = '';
+                        input.dispatchEvent(new Event('change'));
+                    }
+                    button.setAttribute('aria-pressed', 'true');
+                    button.disabled = true;
+                    button.closest('.existing-photo-slot').classList.add('is-marked-for-removal');
+                });
+            });
+            // A replacement cancels removal for that side because the new file will take its place.
+            [frontPhotoInput, backPhotoInput].forEach(input => {
+                input.addEventListener('change', () => {
+                    if (!input.files[0]) return;
+                    const removeButton = existingPhotoList.querySelector(`[data-photo-side="${input.id === frontPhotoInput.id ? 'Front' : 'Back'}"]`);
+                    removeButton.setAttribute('aria-pressed', 'false');
+                    removeButton.disabled = false;
+                    removeButton.textContent = `Remove ${removeButton.dataset.photoSide.toLowerCase()}`;
+                    removeButton.closest('.existing-photo-slot').classList.remove('is-marked-for-removal');
+                });
+            });
+
+            function showEditMessage(text, isError = false) {
+                editMessage.textContent = text;
+                editMessage.classList.toggle('store-error', isError);
+            }
+
+            setEditAccess(window.storeAdminIsVerified === true);
+            window.addEventListener('store-admin-access-changed', event => setEditAccess(event.detail.isAdmin));
+            editToggle.addEventListener('click', () => {
+                populateEditForm();
+                showEditMessage('');
+                editPanel.hidden = false;
+                document.querySelector('#edit-card-name').focus();
+            });
+            // Discard unsaved fields and selected replacement files when the edit is cancelled.
+            document.querySelector('#cancel-card-edit').addEventListener('click', () => {
+                editPanel.hidden = true;
+                editForm.reset();
+                resetEditPhotoSlots();
+            });
+
+            // Upload only selected replacements, then save the front/back photo set together.
+            editForm.addEventListener('submit', async event => {
+                event.preventDefault();
+                showEditMessage('Saving changes…');
+                const removedIndexes = new Set([...existingPhotoList.querySelectorAll('.photo-remove-control[aria-pressed="true"]')]
+                    .map(input => Number(input.dataset.photoIndex)));
+                const photoSlots = getPhotoSlots();
+                const replacementFiles = {
+                    Front: frontPhotoInput.files[0] || null,
+                    Back: backPhotoInput.files[0] || null
+                };
+                // Prevent saving only when every current photo is removed and no replacement is selected.
+                const hasPhotosAfterEdit = photoSlots.some(slot =>
+                    replacementFiles[slot.side] || (slot.photo && !removedIndexes.has(slot.index)));
+                if (!hasPhotosAfterEdit) {
+                    showEditMessage('A card must have at least one photo.', true);
+                    return;
+                }
+
+                const detail = document.querySelector('#edit-card-detail').value.trim();
+                let uploadedPhotos = [];
+                let cardSaved = false;
+                try {
+                    const uploadedBySide = {};
+                    for (const side of ['Front', 'Back']) {
+                        if (!replacementFiles[side]) continue;
+                        uploadedBySide[side] = await window.uploadCardPhoto(card.id, replacementFiles[side], side, detail);
+                        uploadedPhotos.push(uploadedBySide[side]);
+                    }
+                    const recordPhotos = photoSlots.map(slot => uploadedBySide[slot.side]
+                        || (slot.photo && !removedIndexes.has(slot.index) ? slot.photo : null)).filter(Boolean);
+                    const record = {
+                        ...card,
+                        name: document.querySelector('#edit-card-name').value.trim(),
+                        detail,
+                        grade: document.querySelector('#edit-card-grade').value,
+                        title: document.querySelector('#edit-card-title').value.trim(),
+                        photos: recordPhotos.map(photo => ({
+                            ...photo,
+                            rotationEnabled: rotationToggle.checked
+                        }))
+                    };
+                    const { error } = await window.getStoreSupabaseClient()
+                        .from('cards').upsert(record, { onConflict: 'id' });
+                    if (error) throw error;
+                    cardSaved = true;
+
+                    // Remove old managed files only after the updated card record is saved.
+                    const removedPhotos = card.photos.filter(photo =>
+                        !record.photos.includes(photo) && photo.storagePath);
+                    card.name = record.name;
+                    card.detail = record.detail;
+                    card.grade = record.grade;
+                    card.title = record.title;
+                    card.photos.splice(0, card.photos.length, ...record.photos);
+                    rotationEnabled = rotationToggle.checked;
+                    photoIsSideways = false;
+                    rotateButton.hidden = !rotationEnabled;
+                    document.querySelector('#slab-grade').textContent = `${card.grade} · ${card.detail}`;
+                    document.querySelector('#slab-title').textContent = card.title;
+                    document.querySelector('.slab-viewer').setAttribute('aria-label', `${card.detail} card photos`);
+                    document.title = `${card.detail} | Beans Jeans Card Club`;
+                    currentPhoto = Math.min(currentPhoto, photos.length - 1);
+                    showPhoto(currentPhoto);
+                    document.querySelector('#previous-photo').hidden = photos.length < 2;
+                    document.querySelector('#next-photo').hidden = photos.length < 2;
+                    resetEditPhotoSlots();
+                    populateEditForm();
+
+                    try {
+                        await window.removeManagedCardPhotos(removedPhotos);
+                        showEditMessage('Card updated.');
+                    } catch (cleanupError) {
+                        showEditMessage(`Card updated, but removed photo cleanup failed: ${cleanupError.message}`, true);
+                    }
+                } catch (error) {
+                    if (!cardSaved && uploadedPhotos.length) {
+                        try {
+                            await window.removeManagedCardPhotos(uploadedPhotos);
+                        } catch (cleanupError) {
+                            console.error('Unable to clean up uploaded card photos:', cleanupError);
+                        }
+                    }
+                    showEditMessage(`Unable to save changes: ${error.message}`, true);
+                }
+            });
+
+            const deleteCardDialog = document.querySelector('#delete-card-dialog');
+            const deleteCardDialogMessage = document.querySelector('#delete-card-message');
+            deleteCardDialogMessage.textContent = `Are you sure you want to delete ${card.detail}? This cannot be undone.`;
+            // Delete only after the user confirms in the shared-style modal.
+            document.querySelector('#delete-card').addEventListener('click', async () => {
+                deleteCardDialog.showModal();
+                const confirmed = await new Promise(resolve => {
+                    deleteCardDialog.addEventListener('close', () => resolve(deleteCardDialog.returnValue === 'delete'), { once: true });
+                });
+                if (!confirmed) return;
+                showEditMessage('Deleting card…');
+                const { error } = await window.getStoreSupabaseClient()
+                    .from('cards').delete().eq('id', card.id);
+                if (error) {
+                    showEditMessage(`Unable to delete card: ${error.message}`, true);
+                    return;
+                }
+
+                try {
+                    await window.removeManagedCardPhotos(card.photos);
+                } catch (cleanupError) {
+                    showEditMessage(`Card deleted, but photo cleanup failed: ${cleanupError.message}`, true);
+                    return;
+                }
+                window.location.assign('collection.html');
+            });
+            }
+        })().catch(error => window.showStoreError(document.querySelector('#collection-browser'), error));
     </script>
     <!-- Shared light/dark theme behavior. -->
     <script src="theme.js"></script>

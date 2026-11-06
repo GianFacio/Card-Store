@@ -1,7 +1,6 @@
-"""Serve the card-store pages and image files from a local web server."""
+"""Serve the card-store pages and scripts from a local web server."""
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-import mimetypes
 from pathlib import Path
 from urllib.parse import urlsplit
 import webbrowser
@@ -12,31 +11,23 @@ class StorefrontHandler(BaseHTTPRequestHandler):
 
 	def do_GET(self):
 		request_path = urlsplit(self.path).path
-		# Fixed page and script routes; image files are handled separately below.
+		# Fixed page and script routes.
 		assets = {
 			"/": ("index.html", "text/html; charset=utf-8"),
 			"/index.html": ("index.html", "text/html; charset=utf-8"),
 			"/collection.html": ("collection.html", "text/html; charset=utf-8"),
+			"/admin.html": ("admin.html", "text/html; charset=utf-8"),
 			"/styles.css": ("styles.css", "text/css; charset=utf-8"),
-			"/cards.js": ("cards.js", "text/javascript; charset=utf-8"),
+			"/store-data.js": ("store-data.js", "text/javascript; charset=utf-8"),
+			"/store-admin-tools.js": ("store-admin-tools.js", "text/javascript; charset=utf-8"),
+			"/supabase-config.js": ("supabase-config.js", "text/javascript; charset=utf-8"),
+			"/admin.js": ("admin.js", "text/javascript; charset=utf-8"),
+			"/admin-access.js": ("admin-access.js", "text/javascript; charset=utf-8"),
 			"/theme.js": ("theme.js", "text/javascript; charset=utf-8"),
 		}
 		if request_path in assets:
 			filename, content_type = assets[request_path]
 			file_path = Path(__file__).parent / filename
-		elif request_path.startswith("/images/"):
-			# Serve image files by name without requiring a separate route for each card.
-			image_name = request_path[len("/images/"):]
-			image_directory = (Path(__file__).parent / "images").resolve()
-			file_path = (image_directory / image_name).resolve()
-			if (Path(image_name).name != image_name or file_path.parent != image_directory
-					or not file_path.is_file()):
-				self.send_error(404)
-				return
-			content_type = mimetypes.guess_type(file_path.name)[0]
-			if not content_type or not content_type.startswith("image/"):
-				self.send_error(404)
-				return
 		else:
 			self.send_error(404)
 			return

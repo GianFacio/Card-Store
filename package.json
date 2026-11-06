@@ -17,8 +17,5 @@
   "bugs": {
     "url": "https://github.com/GianFacio/Card-Store/issues"
   },
-  "homepage": "https://github.com/GianFacio/Card-Store#readme",
-  "dependencies": {
-    "bootstrap": "^5.3.8"
-  }
+  "homepage": "https://github.com/GianFacio/Card-Store#readme"
 }

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Card Store Admin | Beans Jeans Card Club</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a class="site-brand" href="index.html">Beans Jeans Card Club</a>
+            <div class="header-actions">
+                <button type="button" class="theme-toggle" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
+                    <i class="bi bi-circle-half header-icon" aria-hidden="true"></i>
+                </button>
+                <button type="button" id="admin-access-toggle" class="theme-toggle" aria-label="Admin sign in" title="Admin sign in">
+                    <svg class="header-icon header-lock-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4M4.5 7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7zM8 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+    <main class="admin-page">
+        <section id="admin-login">
+            <h1>Admin sign in</h1>
+            <p>Sign in with the admin account configured in Supabase.</p>
+            <form id="login-form" class="admin-form">
+                <label>Username
+                    <input id="login-username" type="text" autocomplete="username" required>
+                </label>
+                <label>Password
+                    <span class="password-field">
+                        <input id="login-password" type="password" autocomplete="current-password" required>
+                        <button id="toggle-password-visibility" class="filter password-toggle" type="button" aria-label="Show password" title="Show password" aria-controls="login-password" aria-pressed="false">
+                            <svg class="password-eye" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                            </svg>
+                            <svg class="password-eye-slash" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7 7 0 0 0-2.79.588l.77.771A6 6 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755q-.247.248-.517.486z"/>
+                                <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"/>
+                                <path d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z"/>
+                            </svg>
+                        </button>
+                    </span>
+                </label>
+                <button class="filter active" type="submit">Sign in</button>
+            </form>
+        </section>
+
+        <section id="admin-dashboard" hidden>
+            <h1>Add a card</h1>
+            <p>New cards are added to your collection immediately.</p>
+            <form id="card-form" class="admin-form">
+                <label>Card ID
+                    <input id="card-id" name="id" pattern="[a-z0-9\-]+" autocomplete="off" required>
+                    <small>Use a unique lowercase ID, such as jacob-amaya.</small>
+                </label>
+                <label>Card name
+                    <input id="card-name" name="name" required>
+                </label>
+                <label>Player or card detail
+                    <input id="card-detail" name="detail" required>
+                </label>
+                <label>Grade
+                    <select id="card-grade" name="grade" required>
+                        <option value="Raw">Raw</option>
+                        <option value="PSA 10">PSA 10</option>
+                        <option value="PSA 9">PSA 9</option>
+                        <option value="PSA 8">PSA 8</option>
+                        <option value="PSA 7">PSA 7</option>
+                        <option value="PSA 6">PSA 6</option>
+                        <option value="PSA 5">PSA 5</option>
+                        <option value="PSA 4">PSA 4</option>
+                        <option value="PSA 3">PSA 3</option>
+                        <option value="PSA 2">PSA 2</option>
+                        <option value="PSA 1">PSA 1</option>
+                    </select>
+                </label>
+                <label>Card title
+                    <input id="card-title" name="title" required>
+                </label>
+                <label class="photo-rotation-toggle">
+                    <input id="card-rotation-enabled" name="rotationEnabled" type="checkbox">
+                    Horizontal card — show rotate control
+                </label>
+                <fieldset class="photo-edit-list">
+                    <legend>Card photos (front and back)</legend>
+                    <div class="photo-slots">
+                        <div class="photo-slot">
+                            <span class="photo-slot-title">Front <span class="required-indicator">(required)</span></span>
+                            <button class="photo-slot-picker" type="button" data-file-input="card-front-photo" aria-controls="card-front-photo" aria-label="Choose front photo">
+                                <span class="photo-slot-preview" data-preview-for="card-front-photo">Choose front</span>
+                                <span class="photo-slot-action">Choose photo</span>
+                            </button>
+                            <input id="card-front-photo" class="visually-hidden-file" type="file" accept="image/jpeg,image/png,image/webp" tabindex="-1">
+                        </div>
+                        <div class="photo-slot">
+                            <span class="photo-slot-title">Back <span class="required-indicator">(optional)</span></span>
+                            <button class="photo-slot-picker" type="button" data-file-input="card-back-photo" aria-controls="card-back-photo" aria-label="Choose back photo">
+                                <span class="photo-slot-preview" data-preview-for="card-back-photo">Choose back</span>
+                                <span class="photo-slot-action">Choose photo</span>
+                            </button>
+                            <input id="card-back-photo" class="visually-hidden-file" type="file" accept="image/jpeg,image/png,image/webp" tabindex="-1">
+                        </div>
+                    </div>
+                    <small class="photo-help-text">One photo per side. JPEG, PNG, or WebP, up to 5 MB each.</small>
+                </fieldset>
+                <div class="admin-actions">
+                    <button class="filter active" type="submit">Save card</button>
+                    <a class="collection-link" id="cancel-add-card" href="index.html">Cancel</a>
+                </div>
+            </form>
+        </section>
+        <p id="admin-message" role="status" aria-live="polite"></p>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="store-data.js"></script>
+    <script src="theme.js"></script>
+    <script src="admin-access.js"></script>
+    <script src="store-admin-tools.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>

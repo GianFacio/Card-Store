@@ -30,6 +30,9 @@ html {
     --graded-badge-background: #e4efe7;
     --graded-badge-border: #c5d6c9;
     --graded-badge-text: #1f4d36;
+    --psa10-badge-background: #f3ead4;
+    --psa10-badge-border: #d8c18b;
+    --psa10-badge-text: #6b541f;
     --raw-badge-background: #f2f4f1;
     --raw-badge-border: #dfe5dc;
     --raw-badge-text: #65756a
@@ -50,6 +53,9 @@ html {
     --graded-badge-background: #315b42;
     --graded-badge-border: #3d7652;
     --graded-badge-text: #e6f0e8;
+    --psa10-badge-background: #54451f;
+    --psa10-badge-border: #8a7137;
+    --psa10-badge-text: #f5e8c2;
     --raw-badge-background: #26332c;
     --raw-badge-border: #536474;
     --raw-badge-text: #b7c5ba
@@ -91,6 +97,12 @@ main {
     gap: 16px
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px
+}
+
 /* Let the main area fill available height. */
 main {
     flex: 1;
@@ -113,10 +125,10 @@ a {
 .theme-toggle {
     display: inline-grid;
     place-items: center;
-    width: 36px;
-    height: 36px;
-    border: 1px solid currentColor;
-    border-radius: 6px;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 0;
     background: transparent;
     color: inherit;
     cursor: pointer
@@ -130,13 +142,131 @@ a {
     overflow: hidden
 }
 
-/* Theme icon sizing inside its button. */
-.theme-toggle .bi {
-    display: block
+/* Bootstrap header icons share one size and inherit their button color. */
+.header-actions > button > .header-icon {
+    display: block;
+    color: inherit;
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+    line-height: 1
+}
+
+.header-actions > button > svg.header-icon {
+    width: 44px;
+    height: 44px
+}
+
+.header-actions > button > svg.header-lock-icon,
+.header-actions > button > svg.header-unlock-icon {
+    width: 24px;
+    height: 24px
+}
+
+.store-modal {
+    width: min(420px, calc(100vw - 32px));
+    max-width: none;
+    padding: 0;
+    border: 1px solid var(--control-border);
+    border-radius: 10px;
+    color: var(--text-color);
+    background: var(--control-background);
+    box-shadow: 0 16px 48px rgb(0 0 0 / 28%)
+}
+
+.store-modal::backdrop {
+    background: rgb(0 0 0 / 55%)
+}
+
+.store-modal-content {
+    padding: 22px
+}
+
+.store-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px
+}
+
+.store-modal-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font: 600 20px Arial, sans-serif
+}
+
+.store-modal-header h2 i {
+    color: var(--active-background)
+}
+
+.store-modal-close {
+    padding: 0;
+    border: 0;
+    color: var(--muted-color);
+    background: transparent;
+    font: 28px/1 Arial, sans-serif;
+    cursor: pointer
+}
+
+.store-modal-content > p {
+    margin: 0 0 22px;
+    color: var(--muted-color);
+    line-height: 1.5
+}
+
+.store-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px
+}
+
+.store-modal-login-form {
+    gap: 14px;
+    margin: 0
+}
+
+.store-modal-login-message {
+    margin: 0;
+    font-size: 14px
+}
+
+.store-modal-button {
+    min-height: 40px;
+    padding: 8px 14px;
+    border: 1px solid var(--control-border);
+    border-radius: 6px;
+    font: inherit;
+    cursor: pointer
+}
+
+.store-modal-button:disabled {
+    opacity: .7;
+    cursor: wait
+}
+
+.store-modal-cancel {
+    color: var(--text-color);
+    background: var(--control-background)
+}
+
+.store-modal-confirm {
+    border-color: var(--active-background);
+    color: #fff;
+    background: var(--active-background)
+}
+
+.store-modal-button:focus-visible,
+.store-modal-close:focus-visible {
+    outline: 2px solid #2d6a4f;
+    outline-offset: 2px
 }
 
 /* Visible focus outlines for keyboard navigation. */
 .theme-toggle:focus-visible,
+#admin-access-toggle:focus-visible,
 .filter:focus-visible,
 .slab-arrow:focus-visible,
 .side-rotate-button:focus-visible,
@@ -186,21 +316,284 @@ h2 {
 /* Transparent-style link back to the full collection. */
 .collection-link {
     display: inline-block;
+    min-width: 133px;
+    min-height: 46px;
     padding: 12px 16px;
     border: 1px solid var(--control-border);
     border-radius: 6px;
     background: var(--control-background);
     color: var(--text-color);
-    text-decoration: none
+    text-decoration: none;
+    text-align: center;
+    font: inherit;
+    line-height: 20px
 }
 
-.collection-link:hover {
+/* Match the return link's sizing while keeping the edit control keyboard-friendly. */
+#edit-card-toggle {
+    min-width: 133px;
+    min-height: 46px;
+    padding: 12px 16px;
+    font: inherit;
+    line-height: 20px
+}
+
+/* Give the return link and edit action the same visible hover feedback. */
+.collection-link:hover,
+#edit-card-toggle:hover {
     background: var(--active-background);
     border-color: var(--active-background);
     color: white
 }
 
 /* Selected photo centered between its navigation arrows. */
+.detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px
+}
+
+/* Keep the inline card editor compact around its heading and action buttons. */
+.card-edit-panel {
+    margin-top: 12px;
+    padding: 8px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--control-background)
+}
+
+.card-edit-panel .admin-form {
+    margin: 6px 0 0
+}
+
+.card-edit-panel #card-edit-message {
+    margin: 0
+}
+
+.card-edit-panel h2 {
+    margin: 0 0 2px;
+    font: normal 25px Georgia, serif
+}
+
+.card-edit-panel .admin-form textarea {
+    min-height: 72px;
+    padding: 9px 11px;
+    border: 1px solid var(--control-border);
+    border-radius: 6px;
+    color: var(--text-color);
+    background: var(--control-background);
+    font: inherit;
+    line-height: 1.35;
+    resize: vertical
+}
+
+.photo-rotation-toggle {
+    display: flex !important;
+    align-items: center;
+    gap: 9px !important;
+    font-weight: normal !important
+}
+
+.photo-rotation-toggle input {
+    flex: 0 0 18px;
+    width: 18px !important;
+    min-height: 18px !important;
+    margin: 0
+}
+
+.photo-edit-list {
+    min-width: 0;
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--control-border);
+    border-radius: 6px
+}
+
+.photo-edit-list legend {
+    padding: 0 5px;
+    font-size: 14px;
+    font-weight: bold
+}
+
+/* Keep front and back photo slots aligned in add and edit forms. */
+.photo-slots,
+.existing-photos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px
+}
+
+.photo-slot {
+    display: grid;
+    align-content: start;
+    gap: 7px;
+    min-width: 0
+}
+
+.photo-slot-title {
+    min-height: 18px;
+    color: var(--text-color);
+    font-size: 14px;
+    font-weight: bold
+}
+
+.required-indicator {
+    color: var(--muted-color);
+    font-size: 12px;
+    font-weight: normal
+}
+
+.photo-slot-picker {
+    display: grid;
+    gap: 7px;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    color: var(--text-color);
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer
+}
+
+.photo-slot-preview {
+    display: grid;
+    place-items: center;
+    position: relative;
+    width: 100%;
+    max-width: 170px;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 1px dashed var(--control-border);
+    border-radius: 6px;
+    color: var(--muted-color);
+    background: var(--control-background);
+    font-size: 13px;
+    font-weight: normal;
+    text-align: center
+}
+
+#card-form .photo-slot-title {
+    text-align: center
+}
+
+#card-form .photo-slot-preview {
+    justify-self: center
+}
+
+/* Center the upload guidance beneath the front and back slots on the add form. */
+#card-form .photo-help-text {
+    text-align: center
+}
+
+/* Keep the entire front or back image visible inside its square preview. */
+.photo-slot-preview img {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain
+}
+
+.photo-zoom-dialog > img.is-sideways {
+    transform: rotate(90deg) scale(.82)
+}
+
+.photo-zoom-dialog > img.is-sideways-reversed {
+    transform: rotate(-90deg) scale(.82)
+}
+
+.photo-slot-action {
+    color: var(--text-color);
+    font-size: 13px;
+    text-align: center
+}
+
+.photo-slot-picker:hover .photo-slot-preview {
+    border-color: var(--active-background)
+}
+
+.photo-help-text {
+    display: block;
+    margin: 10px 8px 0
+}
+
+.photo-slot-picker:focus-visible {
+    outline: 2px solid #2d6a4f;
+    outline-offset: 3px
+}
+
+.existing-photo-slot .photo-slot-preview {
+    border-style: solid
+}
+
+/* Make removing an existing photo an explicit action instead of a checkbox. */
+.photo-remove-control {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+    min-height: 34px;
+    padding: 6px 12px;
+    border: 1px solid var(--control-border);
+    border-radius: 6px;
+    color: var(--muted-color) !important;
+    background: var(--control-background);
+    font-size: 13px;
+    font-weight: normal !important;
+    cursor: pointer
+}
+
+.photo-remove-control:hover:not(:disabled) {
+    border-color: #a33b2a;
+    color: #a33b2a !important
+}
+
+.photo-remove-control:disabled {
+    opacity: .5;
+    cursor: not-allowed
+}
+
+/* Visually distinguish a photo marked for removal until the card is saved. */
+.is-marked-for-removal .photo-slot-preview {
+    opacity: .45
+}
+
+.is-marked-for-removal .photo-slot-title,
+.is-marked-for-removal .photo-remove-control {
+    color: #a33b2a !important
+}
+
+.is-marked-for-removal .photo-remove-control {
+    border-color: #a33b2a
+}
+
+/* Use destructive styling for card deletion and admin sign-out confirmations. */
+.card-edit-panel .delete-card-button,
+.store-destructive-dialog .store-modal-confirm {
+    border-color: #a33b2a;
+    color: #fff;
+    background: #a33b2a
+}
+
+.card-edit-panel .delete-card-button:hover,
+.store-destructive-dialog .store-modal-confirm:hover {
+    border-color: #842d20;
+    background: #842d20
+}
+
+.card-edit-panel .admin-actions .filter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 90px;
+    min-height: 42px;
+    padding: 8px 12px;
+    font: inherit
+}
+
 .slab-viewer {
     display: grid;
     grid-template-columns: 44px minmax(0, 1fr) 44px;
@@ -214,6 +607,66 @@ h2 {
     grid-row: 1;
     margin: 0;
     text-align: center
+}
+
+.photo-zoom-trigger {
+    display: block;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in
+}
+
+.photo-zoom-trigger:focus-visible {
+    outline: 2px solid #2d6a4f;
+    outline-offset: 4px
+}
+
+.photo-zoom-dialog {
+    position: relative;
+    width: min(94vw, 1400px);
+    max-width: none;
+    max-height: 94dvh;
+    padding: 52px 16px 16px;
+    overflow: visible;
+    border: 1px solid #536474;
+    border-radius: 10px;
+    color: white;
+    background: #101820
+}
+
+.photo-zoom-dialog::backdrop {
+    background: rgb(0 0 0 / 82%)
+}
+
+.photo-zoom-dialog > img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: calc(94dvh - 72px);
+    margin: 0 auto;
+    object-fit: contain
+}
+
+.photo-zoom-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #536474;
+    border-radius: 6px;
+    color: white;
+    background: #24323e;
+    font: 28px/1 Arial, sans-serif;
+    cursor: pointer
+}
+
+.photo-zoom-close:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px
 }
 
 /* Preserve photo proportions and animate rotation and photo changes. */
@@ -316,11 +769,11 @@ h2 {
     color: white
 }
 
-/* Four equal-width product columns on larger screens. */
+/* Four equal-width product columns with no extra gap between card rows. */
 .products {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 20px
+    gap: 0 20px
 }
 
 /* Product image, name, and details stacked vertically. */
@@ -411,6 +864,13 @@ h2 {
     color: var(--graded-badge-text)
 }
 
+/* Gold badge colors identify PSA 10 cards in both themes. */
+.grade-badge-psa10 {
+    border-color: var(--psa10-badge-border);
+    background: var(--psa10-badge-background);
+    color: var(--psa10-badge-text)
+}
+
 .grade-badge-raw {
     border-color: var(--raw-badge-border);
     background: var(--raw-badge-background);
@@ -446,6 +906,149 @@ h2 {
     text-decoration: underline
 }
 
+/* Keep admin form content inside the padded page width instead of squeezing it. */
+.admin-page {
+    width: 100%;
+    max-width: 760px;
+    padding-right: 22px;
+    padding-left: 22px;
+    align-self: center
+}
+
+.admin-page h1,
+.admin-form h2,
+.admin-card-list h2 {
+    font: normal 30px Georgia, serif
+}
+
+.admin-form {
+    display: grid;
+    gap: 16px;
+    margin: 24px 0
+}
+
+.admin-form label {
+    display: grid;
+    gap: 6px;
+    color: var(--text-color);
+    font-weight: bold
+}
+
+.admin-form input,
+.admin-form select {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px;
+    border: 1px solid var(--control-border);
+    border-radius: 6px;
+    background: var(--control-background);
+    color: var(--text-color);
+    font: inherit
+}
+
+.admin-form input[type="file"] {
+    padding: 7px
+}
+
+.password-field {
+    position: relative;
+    display: block
+}
+
+.password-field input {
+    padding-right: 48px
+}
+
+.password-field .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    color: var(--muted-color);
+    background: transparent;
+    transform: translateY(-50%);
+    cursor: pointer
+}
+
+.password-field .password-toggle:hover {
+    color: var(--text-color);
+    background: var(--page-background)
+}
+
+.password-eye-slash,
+.password-toggle[aria-pressed="true"] .password-eye {
+    display: none
+}
+
+.password-toggle[aria-pressed="true"] .password-eye-slash {
+    display: block
+}
+
+.admin-form small,
+.admin-heading p,
+.admin-card-row small {
+    color: var(--muted-color);
+    font-size: 13px;
+    font-weight: normal
+}
+
+.admin-heading,
+.admin-card-row,
+.admin-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px
+}
+
+.admin-card-row {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-color)
+}
+
+.admin-card-row strong,
+.admin-card-row small {
+    display: block
+}
+
+.visually-hidden-file {
+    position: absolute;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0 !important
+}
+
+.store-error {
+    padding: 12px 14px;
+    border: 1px solid #b75a4a;
+    border-radius: 6px;
+    color: #a33b2a
+}
+
+#card-form .admin-actions > button,
+#card-form .admin-actions > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 133px;
+    min-width: 133px;
+    height: 46px;
+    padding: 12px 16px;
+    font: inherit;
+    line-height: 20px
+}
+
 /* Header contents wrap on narrower screens. */
 @media(max-width:700px) {
     .site-header-inner {
@@ -476,6 +1079,12 @@ h2 {
         grid-template-columns: repeat(2, minmax(0, 1fr))
     }
 
+    .admin-heading,
+    .admin-card-row {
+        align-items: flex-start;
+        flex-direction: column
+    }
+
 }
 
 /* Tighter header and product layout on phone-sized screens. */
@@ -489,13 +1098,14 @@ h2 {
         font-size: 22px
     }
 
-    /* Keep card columns distinct while preserving two cards per row. */
+    /* Keep card columns distinct and bring the next row closer on phones. */
     .products {
-        gap: 24px 14px
+        gap: 0 14px
     }
 
     /* Keep the return link compact on phone-sized screens. */
-    .collection-link {
+    .collection-link,
+    #edit-card-toggle {
         padding: 8px 11px;
         font-size: 14px
     }
