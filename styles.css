@@ -1103,9 +1103,12 @@ h2 {
         gap: 0 14px
     }
 
-    /* Keep the return link compact on phone-sized screens. */
+    /* Center button labels vertically and horizontally while keeping the mobile size compact. */
     .collection-link,
     #edit-card-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         padding: 8px 11px;
         font-size: 14px
     }
