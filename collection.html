@@ -2,66 +2,187 @@
 <html lang="en">
 
 <head>
+    <!-- Page metadata and shared stylesheet links. -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Marlon Vera Slab | Beans Jeans Card Club</title>
+    <title>Card Collection | Beans Jeans Card Club</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <header>
-        <a class="logo" href="index.html">Beans Jeans Card Club</a>
-        <nav><a href="index.html">Home</a></nav>
-    </header>
-    <main class="slab-showcase">
-        <div class="slab-info">
-            <p class="slab-grade">PSA 9 · Marlon Vera</p>
-            <h1>2024 Topps UFC Knockout Gallery Graphs</h1>
-            <p>Card details and front/back views of the slab.</p>
-            <strong class="slab-price">$100.00</strong>
-            <a class="collection-link" href="index.html">Back to cards</a>
+    <!-- The header contains the site name and theme toggle. -->
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a class="site-brand" href="index.html">Beans Jeans Card Club</a>
+            <button type="button" class="btn-outline theme-secondary btn-icon theme-toggle" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
+                <svg class="bi" width="16" height="16" fill="currentColor" aria-hidden="true"><use href="#circle-half"></use></svg>
+            </button>
         </div>
-        <section class="slab-viewer" aria-label="Marlon Vera slab photos">
+    </header>
+    <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <symbol id="circle-half" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16" />
+        </symbol>
+        <symbol id="rotate-icon" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z" />
+            <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466" />
+        </symbol>
+    </svg>
+    <!-- The complete collection appears here when no card is selected. -->
+    <main id="collection-browser">
+        <h2>Card Collection</h2>
+        <div class="filters" id="collection-filters"></div>
+        <div class="products" id="collection-products"></div>
+    </main>
+    <!-- A selected card's details and photo viewer appear here. -->
+    <main class="slab-showcase" id="card-details" hidden>
+        <div class="slab-info">
+            <p class="slab-grade" id="slab-grade"></p>
+            <h1 id="slab-title"></h1>
+            <a class="collection-link" href="collection.html">Back to cards</a>
+        </div>
+        <section class="slab-viewer" aria-label="Card photos">
             <button id="previous-photo" class="slab-arrow" type="button" aria-label="Previous photo">&lsaquo;</button>
             <figure>
-                <img id="slab-image" src="images/marlon-slab.jpg" alt="Front of Marlon Vera PSA slab">
-                <figcaption id="slab-caption">Front of Marlon Vera PSA slab (1 of 2)</figcaption>
+                <img id="slab-image" alt="">
+                <button id="rotate-photo" class="side-rotate-button" type="button" aria-label="Rotate photo sideways" title="Rotate photo sideways" aria-pressed="false" hidden>
+                    <svg class="rotate-icon" width="20" height="20" fill="currentColor" aria-hidden="true"><use href="#rotate-icon"></use></svg>
+                </button>
             </figure>
             <button id="next-photo" class="slab-arrow" type="button" aria-label="Next photo">&rsaquo;</button>
-            <div class="slab-photo-select" aria-label="Choose slab side">
-                <button class="slab-side active" type="button" data-photo="0">Front</button>
-                <button class="slab-side" type="button" data-photo="1">Back</button>
-            </div>
         </section>
     </main>
     <footer>Beans Jeans Card Club</footer>
 
+    <script src="cards.js"></script>
     <script>
-        const photos = [
-            { src: 'images/marlon-slab.jpg', alt: 'Front of Marlon Vera PSA slab' },
-            { src: 'images/marlon-slab-back.jpg', alt: 'Back of Marlon Vera PSA slab' }
-        ];
-        const image = document.querySelector('#slab-image');
-        const caption = document.querySelector('#slab-caption');
-        const sideButtons = document.querySelectorAll('.slab-side');
-        let currentPhoto = 0;
+        // The shared catalog provides data for both collection and detail views.
+        const cards = window.cardCatalog;
+        const selectedCard = new URLSearchParams(window.location.search).get('card');
+        const card = selectedCard && Object.prototype.hasOwnProperty.call(cards, selectedCard)
+            ? cards[selectedCard]
+            : null;
+        const collectionBrowser = document.querySelector('#collection-browser');
+        const cardDetails = document.querySelector('#card-details');
 
-        function showPhoto(index) {
-            currentPhoto = (index + photos.length) % photos.length;
-            image.src = photos[currentPhoto].src;
-            image.alt = photos[currentPhoto].alt;
-            caption.textContent = `${photos[currentPhoto].alt} (${currentPhoto + 1} of ${photos.length})`;
-            sideButtons.forEach((button, buttonIndex) => {
-                button.classList.toggle('active', buttonIndex === currentPhoto);
-            });
+        if (!selectedCard || !card) {
+            const products = document.querySelector('#collection-products');
+            const filters = document.querySelector('#collection-filters');
+            const items = Object.entries(cards).map(([id, item]) => ({ id, ...item }));
+            const grades = ['all', ...new Set(items.map(item => item.grade))];
+
+            filters.innerHTML = grades.map(grade =>
+                `<button class="filter${grade === 'all' ? ' active' : ''}" data-kind="${grade}">${grade === 'all' ? 'All cards' : grade}</button>`
+            ).join('');
+
+            function showCollection(grade = 'all') {
+                products.innerHTML = items
+                    .filter(item => grade === 'all' || item.grade === grade)
+                    .map(item => `
+                        <article class="product">
+                            <a class="product-image-button" href="collection.html?card=${item.id}" aria-label="View photos of ${item.name}">
+                                <img src="${item.photos[0].src}" alt="${item.photos[0].alt}">
+                            </a>
+                            <h3>${item.name}</h3>
+                            <div class="detail">${item.detail}</div>
+                        </article>
+                    `).join('');
+            }
+
+            filters.querySelectorAll('.filter').forEach(button => button.addEventListener('click', () => {
+                filters.querySelector('.filter.active').classList.remove('active');
+                button.classList.add('active');
+                showCollection(button.dataset.kind);
+            }));
+
+            if (selectedCard) {
+                collectionBrowser.insertAdjacentHTML('beforeend', '<p class="collection-notice">Card not found. Showing all cards.</p>');
+                document.title = 'Card Collection | Beans Jeans Card Club';
+            }
+            showCollection();
+        } else {
+            collectionBrowser.hidden = true;
+            cardDetails.hidden = false;
+            const photos = card.photos;
+            const image = document.querySelector('#slab-image');
+            const rotateButton = document.querySelector('#rotate-photo');
+            document.querySelector('#slab-grade').textContent = `${card.grade} · ${card.detail}`;
+            document.querySelector('#slab-title').textContent = card.title;
+            document.querySelector('.slab-viewer').setAttribute('aria-label', `${card.detail} card photos`);
+            document.title = `${card.detail} | Beans Jeans Card Club`;
+            let currentPhoto = 0;
+
+            // Show the sales section only when verified records are available.
+            if (Array.isArray(card.sales) && card.sales.length > 0) {
+                const salesSection = document.createElement('section');
+                salesSection.className = 'recent-sales';
+
+                const salesHeading = document.createElement('h2');
+                salesHeading.textContent = 'Recent eBay sales';
+                salesSection.append(salesHeading);
+
+                const salesList = document.createElement('ul');
+                card.sales.forEach(sale => {
+                    const saleItem = document.createElement('li');
+                    const saleDescription = document.createElement('span');
+                    saleDescription.textContent = `${sale.title} · ${sale.date} · ${sale.price}`;
+                    saleItem.append(saleDescription);
+
+                    if (sale.url) {
+                        const saleLink = document.createElement('a');
+                        saleLink.href = sale.url;
+                        saleLink.textContent = 'View sale';
+                        saleLink.target = '_blank';
+                        saleLink.rel = 'noopener noreferrer';
+                        saleItem.append(' ', saleLink);
+                    }
+
+                    salesList.append(saleItem);
+                });
+
+                salesSection.append(salesList);
+                document.querySelector('.slab-info').append(salesSection);
+            }
+
+            // Cycle through the selected card's photos with the previous and next buttons.
+            function showPhoto(index) {
+                currentPhoto = (index + photos.length) % photos.length;
+                image.src = photos[currentPhoto].src;
+                image.alt = photos[currentPhoto].alt;
+                image.classList.remove('is-sideways', 'is-sideways-reversed');
+                rotateButton.setAttribute('aria-pressed', 'false');
+                rotateButton.setAttribute('aria-label', 'Rotate photo sideways');
+                rotateButton.title = 'Rotate photo sideways';
+            }
+
+            if (selectedCard === 'marlon') {
+                rotateButton.hidden = false;
+                rotateButton.addEventListener('click', () => {
+                    const isSideways = image.classList.contains('is-sideways') || image.classList.contains('is-sideways-reversed');
+                    image.classList.remove('is-sideways', 'is-sideways-reversed');
+                    if (!isSideways) {
+                        image.classList.add(photos[currentPhoto].side === 'Back' ? 'is-sideways-reversed' : 'is-sideways');
+                    }
+                    const isNowSideways = !isSideways;
+                    const action = isNowSideways ? 'Rotate photo upright' : 'Rotate photo sideways';
+                    rotateButton.setAttribute('aria-label', action);
+                    rotateButton.title = action;
+                    rotateButton.setAttribute('aria-pressed', String(isNowSideways));
+                });
+            }
+
+            showPhoto(0);
+            if (photos.length > 1) {
+                document.querySelector('#previous-photo').addEventListener('click', () => showPhoto(currentPhoto - 1));
+                document.querySelector('#next-photo').addEventListener('click', () => showPhoto(currentPhoto + 1));
+            } else {
+                document.querySelector('#previous-photo').hidden = true;
+                document.querySelector('#next-photo').hidden = true;
+            }
         }
-
-        document.querySelector('#previous-photo').addEventListener('click', () => showPhoto(currentPhoto - 1));
-        document.querySelector('#next-photo').addEventListener('click', () => showPhoto(currentPhoto + 1));
-        sideButtons.forEach(button => {
-            button.addEventListener('click', () => showPhoto(Number(button.dataset.photo)));
-        });
     </script>
+    <!-- Shared light/dark theme behavior. -->
+    <script src="theme.js"></script>
 </body>
 
 </html>

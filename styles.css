@@ -1,62 +1,142 @@
-/* Include padding and borders inside each element's set width and height. */
+/* Shared site theme, layout, controls, and responsive styles. */
+/* Padding and borders are included in each element's total size. */
 * {
     box-sizing: border-box
 }
 
-/* Set the page's base font and make its main content fill short screens. */
+/* Keep explicitly hidden sections hidden despite other display rules. */
+[hidden] {
+    display: none !important
+}
+
+/* Default light theme colors and native form-control appearance. */
+:root {
+    color-scheme: light;
+    --page-background: #fff;
+    --text-color: #1f4d36;
+    --muted-color: #65756a;
+    --border-color: #e8ebe6;
+    --control-border: #dfe5dc;
+    --control-background: #fff;
+    --active-background: #274c37;
+    --navbar-background: #f1f5f2;
+    --navbar-text: #1f4d36;
+    --footer-background: #315b42;
+    --footer-color: #fbfcfa
+}
+
+/* Color overrides used when dark mode is selected. */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --page-background: #17212b;
+    --text-color: #d6e8d9;
+    --muted-color: #a9bcae;
+    --border-color: #344451;
+    --control-border: #536474;
+    --control-background: #24323e;
+    --active-background: #3d7652;
+    --navbar-background: #101b14;
+    --navbar-text: #d6e8d9;
+    --footer-background: #101b14;
+    --footer-color: #e6f0e8
+}
+
+/* Base font, theme colors, and full-height page layout. */
 body {
     margin: 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    color: #3a9ada;
+    color: var(--text-color);
+    background: var(--page-background);
     font: 16px Arial, sans-serif
 }
 
-/* Center the page sections and keep their content within a readable width. */
+/* Center the header, page content, and footer within a readable width. */
 header,
 main,
 footer {
     padding: 22px max(6%, calc((100% - 1120px)/2))
 }
 
-/* Arrange the logo and navigation across the header. */
-header {
+/* Tall site header with colors connected to the active theme variables. */
+.site-header {
+    display: block;
+    padding: 22px max(6%, calc((100% - 1120px)/2));
+    background: var(--navbar-background);
+    color: var(--navbar-text);
+    border-bottom: 1px solid var(--border-color)
+}
+
+/* Align the site name and theme control across the header. */
+.site-header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #e8ebe6
+    gap: 16px
 }
 
-/* Let the main area fill extra screen space so the footer stays low. */
+/* Let the main area grow so the footer stays low on short pages. */
 main {
     flex: 1;
 }
 
-/* Style the site name in the header. */
-.logo {
+/* Store name styling in the header. */
+.site-brand {
+    margin: 0;
+    color: var(--navbar-text);
     font: bold 27px Georgia, serif
 }
 
-/* Place navigation links in a horizontal row. */
-nav {
-    display: flex;
-    gap: 22px
-}
-
-/* Use the surrounding text color and remove the default link underline. */
+/* Links inherit their surrounding color without default underlines. */
 a {
     color: inherit;
     text-decoration: none
 }
 
-/* Set the collection heading's font and spacing. */
+/* Icon button styling for the light/dark theme switch. */
+.theme-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid currentColor;
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer
+}
+
+/* SVG symbol sprite remains available without appearing on the page. */
+.icon-sprite {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden
+}
+
+/* Theme icon sizing inside its button. */
+.theme-toggle .bi {
+    display: block
+}
+
+/* Visible focus outlines for keyboard navigation. */
+.theme-toggle:focus-visible,
+.filter:focus-visible,
+.slab-arrow:focus-visible,
+.side-rotate-button:focus-visible,
+.collection-link:focus-visible {
+    outline: 2px solid #2d6a4f;
+    outline-offset: 2px
+}
+
+/* Collection heading typeface and spacing. */
 h2 {
     font: normal 34px Georgia, serif;
     margin-bottom: 8px
 }
 
-/* Arrange the homepage details beside the slab viewer. */
+/* Card details and photo viewer side by side on wide screens. */
 .slab-showcase {
     display: grid;
     grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
@@ -64,34 +144,48 @@ h2 {
     gap: 48px
 }
 
+/* Responsive card title sizing and spacing. */
 .slab-info h1 {
     font: normal clamp(32px, 4vw, 52px)/1.1 Georgia, serif;
     margin: 12px 0
 }
 
+/* Muted color for supporting card text. */
 .slab-info p {
-    color: #667269
+    color: var(--muted-color)
 }
 
+/* Emphasis for the grade and cardholder line. */
 .slab-grade {
     text-transform: uppercase;
     letter-spacing: 2px;
     font-size: 13px
 }
 
+/* Spacing for the card price. */
 .slab-price {
     display: block;
     margin: 24px 0
 }
 
+/* Transparent-style link back to the full collection. */
 .collection-link {
     display: inline-block;
     padding: 12px 16px;
-    background: #3a9ada;
+    border: 1px solid var(--control-border);
+    border-radius: 6px;
+    background: var(--control-background);
+    color: var(--text-color);
+    text-decoration: none
+}
+
+.collection-link:hover {
+    background: var(--active-background);
+    border-color: var(--active-background);
     color: white
 }
 
-/* Keep the selected slab photo large, centered, and fully visible. */
+/* Selected photo centered between its navigation arrows. */
 .slab-viewer {
     display: grid;
     grid-template-columns: 44px minmax(0, 1fr) 44px;
@@ -99,6 +193,7 @@ h2 {
     gap: 10px
 }
 
+/* Center the photo in the middle column of the viewer. */
 .slab-viewer figure {
     grid-column: 2;
     grid-row: 1;
@@ -106,56 +201,64 @@ h2 {
     text-align: center
 }
 
+/* Preserve photo proportions and keep images within the viewport. */
 .slab-viewer figure img {
     display: block;
     width: auto;
     max-width: 100%;
     max-height: min(72vh, 760px);
     margin: 0 auto;
-    object-fit: contain
+    object-fit: contain;
+    transition: transform 180ms ease
 }
 
-.slab-viewer figcaption {
-    margin-top: 10px;
-    color: #667269;
-    font-size: 14px
+/* Rotate the Marlon Vera photo while keeping it within the viewer. */
+.slab-viewer figure img.is-sideways {
+    transform: rotate(90deg) scale(0.72)
 }
 
+.slab-viewer figure img.is-sideways-reversed {
+    transform: rotate(-90deg) scale(0.72)
+}
+
+/* Transparent rotation control placed beneath the selected photo. */
+.side-rotate-button {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin-top: 12px;
+    border: 1px solid var(--control-border);
+    border-radius: 6px;
+    background: var(--control-background);
+    color: var(--text-color);
+    cursor: pointer
+}
+
+.rotate-icon {
+    display: block
+}
+
+.side-rotate-button:hover {
+    background: var(--active-background);
+    border-color: var(--active-background);
+    color: white
+}
+
+/* Previous and next photo controls with transparent backgrounds. */
 .slab-arrow {
     z-index: 1;
     grid-row: 1;
     padding: 8px;
-    border: 1px solid #dfe5dc;
-    border-radius: 50%;
-    background: white;
-    color: #3a9ada;
+    border: 1px solid var(--control-border);
+    border-radius: 6px;
+    background: var(--control-background);
+    color: var(--text-color);
     font-size: 26px;
     cursor: pointer
 }
 
-.slab-photo-select {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 8px
-}
-
-.slab-side {
-    padding: 8px 16px;
-    border: 1px solid #dfe5dc;
-    border-radius: 18px;
-    background: white;
-    color: #3a9ada;
-    cursor: pointer
-}
-
-.slab-side.active {
-    background: #3a9ada;
-    color: white
-}
-
-/* Lay out the product category filters in a row. */
+/* Grade filters wrap into rows with consistent spacing. */
 .filters {
     display: flex;
     flex-wrap: wrap;
@@ -163,42 +266,45 @@ h2 {
     margin: 24px 0
 }
 
-/* Style each category filter as a rounded, clickable button. */
+/* Square-cornered style for each grade filter button. */
 .filter {
-    background: white;
-    border: 1px solid #dfe5dc;
+    background: var(--control-background);
+    color: var(--text-color);
+    border: 1px solid var(--control-border);
     padding: 8px 14px;
-    border-radius: 18px;
+    border-radius: 6px;
     cursor: pointer
 }
 
-/* Highlight the currently selected category filter. */
+/* Highlight the active grade filter. */
 .filter.active {
-    background: #26382d;
+    background: var(--active-background);
     color: white
 }
 
-/* Show products in four equal-width columns on larger screens. */
+/* Four equal-width product columns on larger screens. */
 .products {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 20px
 }
 
-/* Stack each product's image, name, price, and details vertically. */
+/* Product image, name, and details stacked vertically. */
 .product {
     display: flex;
     flex-direction: column;
     min-width: 0
 }
 
-/* Keep the product image area transparent so the image is shown directly. */
+/* Transparent product art area keeps the image unobstructed. */
 .product-art {
     background: transparent
 }
 
+/* Clickable product image without default button decoration. */
 .product-image-button {
-    display: block;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     width: 100%;
     padding: 0;
     border: 0;
@@ -206,7 +312,14 @@ h2 {
     cursor: pointer
 }
 
-/* Display the complete product image at full card width without stretching. */
+/* Equal reserved image space keeps titles aligned across each row. */
+.product-image-button::before {
+    content: "";
+    grid-area: 1 / 1;
+    aspect-ratio: 0.596
+}
+
+/* Preserve product-art proportions when it fills the available width. */
 .product-art img {
     display: block;
     width: 100%;
@@ -214,80 +327,113 @@ h2 {
     object-fit: contain
 }
 
+/* Preserve source image ratios and align image bottoms across cards. */
 .product-image-button img {
     display: block;
     width: 100%;
-    height: auto
+    height: auto;
+    grid-area: 1 / 1;
+    align-self: end
 }
 
-/* Set product-name text size and spacing. */
+/* Product name text size and spacing. */
 .product h3 {
     font-size: 15px;
     margin: 12px 0 4px
 }
 
-/* Style the product description and keep it at the bottom of its card. */
+/* Cardholder detail styling below the product name. */
 .detail {
     font-size: 13px;
-    color: #1457d4;
+    color: var(--muted-color);
     margin-top: auto;
     padding-top: 10px
 }
 
-/* Align each product's price and any action button on one row. */
-.price-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px
+/* Spacing and typography for verified sale records. */
+.recent-sales {
+    margin-top: 28px
 }
 
-/* Give the footer its dark background and contrasting text. */
+.recent-sales h2 {
+    font: normal 22px Georgia, serif
+}
+
+.recent-sales ul {
+    display: grid;
+    gap: 10px;
+    padding-left: 20px;
+    color: var(--muted-color)
+}
+
+.recent-sales a {
+    color: var(--text-color);
+    text-decoration: underline
+}
+
+/* Green footer background with contrasting text. */
 footer {
     margin-top: 60px;
-    background: #5c8aa8;
-    color: #fbfcfa;
+    background: var(--footer-background);
+    color: var(--footer-color);
     font-size: 14px
 }
 
-/* On narrower screens, reduce spacing between navigation links. */
+/* Header contents wrap on narrower screens. */
 @media(max-width:700px) {
-    nav {
-        gap: 0px
+    .site-header-inner {
+        flex-wrap: wrap
     }
 
+    /* Stack card details above the photo viewer on smaller screens. */
     .slab-showcase {
         grid-template-columns: 1fr;
         gap: 24px
     }
 
+    /* Limit photo height to fit smaller screens. */
     .slab-viewer figure img {
         max-height: 60vh
     }
 
+    .slab-viewer figure img.is-sideways {
+        transform: rotate(90deg) scale(0.55)
+    }
+
+    .slab-viewer figure img.is-sideways-reversed {
+        transform: rotate(-90deg) scale(0.55)
+    }
+
+    /* Two product columns on smaller screens. */
     .products {
         grid-template-columns: repeat(2, minmax(0, 1fr))
     }
 
 }
 
-/* On phone-sized screens, wrap the header and spread navigation across its row. */
+/* Tighter header and product layout on phone-sized screens. */
 @media(max-width:460px) {
-    header {
-        flex-wrap: wrap;
-        gap: 0px
+    .site-header {
+        padding-top: 18px;
+        padding-bottom: 18px
     }
 
-    nav {
-        order: 3;
-        width: 100%;
-        justify-content: space-between
+    .site-brand {
+        font-size: 22px
     }
 
+    /* Keep card columns distinct while preserving two cards per row. */
     .products {
-        gap: 0px
+        gap: 24px 14px
     }
 
+    /* Keep the return link compact on phone-sized screens. */
+    .collection-link {
+        padding: 8px 11px;
+        font-size: 14px
+    }
+
+    /* Narrow arrow columns to give the photo more room on phones. */
     .slab-viewer {
         grid-template-columns: 36px minmax(0, 1fr) 36px;
         gap: 4px

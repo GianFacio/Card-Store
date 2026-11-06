@@ -2,63 +2,69 @@
 <html lang="en">
 
 <head>
+    <!-- Page metadata and shared stylesheet links. -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Beans Jeans Card Club</title>
+
+    <!-- Bootstrap provides base styles and layout utilities. -->
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <header>
-        <a class="logo" href="index.html">Beans Jeans Card Club</a>
-        <nav><a href="#shop">Cards</a></nav>
+    <!-- The header contains the site name and theme toggle. -->
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a class="site-brand" href="index.html">Beans Jeans Card Club</a>
+            <button type="button" class="btn-outline theme-secondary btn-icon theme-toggle" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
+                <svg class="bi" width="16" height="16" fill="currentColor" aria-hidden="true"><use href="#circle-half"></use></svg>
+            </button>
+        </div>
     </header>
+    <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <symbol id="circle-half" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16" />
+        </symbol>
+    </svg>
+    <!-- Grade filters are generated from the card catalog. -->
     <main id="shop">
         <h2>Card Collection</h2>
-        <div class="filters">
-            <button class="filter active" data-kind="all">All cards</button>
-            <button class="filter" data-kind="Raw">Raw</button>
-            <button class="filter" data-kind="PSA 10">PSA 10</button>
-            <button class="filter" data-kind="PSA 9">PSA 9</button>
-            <button class="filter" data-kind="PSA 8">PSA 8</button>
-            <button class="filter" data-kind="PSA 7">PSA 7</button>
-            <button class="filter" data-kind="PSA 6">PSA 6</button>
-            <button class="filter" data-kind="PSA 5">PSA 5</button>
-            <button class="filter" data-kind="PSA 4">PSA 4</button>
-            <button class="filter" data-kind="PSA 3">PSA 3</button>
-            <button class="filter" data-kind="PSA 2">PSA 2</button>
-            <button class="filter" data-kind="PSA 1">PSA 1</button>
-        </div>
+        <div class="filters" id="filters"></div>
         <div class="products" id="products"></div>
+
     </main>
     <footer>Beans Jeans Card Club</footer>
 
+    <script src="cards.js"></script>
     <script>
-        const items = [{
-            name: '2024 Topps UFC Knockout Marlon Vera Gallery Graphs',
-            detail: 'Marlon Vera',
-            price: 100,
-            kind: 'PSA 9',
-            photo: 'images/marlon-slab.jpg',
-            photoAlt: 'Front of Marlon Vera PSA slab'
-        }];
-
+        // The shared catalog supplies card data for the collection tiles.
+        const items = Object.entries(window.cardCatalog).map(([id, card]) => ({ id, ...card }));
         const products = document.querySelector('#products');
+        const filters = document.querySelector('#filters');
 
+        // Build one filter for each grade found in the catalog.
+        const kinds = ['all', ...new Set(items.map(item => item.grade))];
+        filters.innerHTML = kinds.map(kind =>
+            `<button class="filter${kind === 'all' ? ' active' : ''}" data-kind="${kind}">${kind === 'all' ? 'All cards' : kind}</button>`
+        ).join('');
+
+        // Render matching cards as clickable collection tiles.
         function show(kind = 'all') {
-            products.innerHTML = items.filter(item => kind === 'all' || item.kind === kind).map(item =>
+            products.innerHTML = items.filter(item => kind === 'all' || item.grade === kind).map(item =>
                 `<article class="product">
-                    <a class="product-image-button" href="collection.html" aria-label="View photos of ${item.name}">
-                        <img src="${item.photo}" alt="${item.photoAlt}">
+                    <a class="product-image-button" href="collection.html?card=${item.id}" aria-label="View photos of ${item.name}">
+                        <img src="${item.photos[0].src}" alt="${item.photos[0].alt}">
                     </a>
                     <h3>${item.name}</h3>
-                    <div class="price-row"><strong>$${item.price.toFixed(2)}</strong></div>
                     <div class="detail">${item.detail}</div>
                 </article>`
             ).join('');
         }
 
-        document.querySelectorAll('.filter').forEach(button => button.addEventListener('click', () => {
+        // Update the active grade and refresh the visible cards after a filter click.
+        filters.querySelectorAll('.filter').forEach(button => button.addEventListener('click', () => {
             document.querySelector('.filter.active').classList.remove('active');
             button.classList.add('active');
             show(button.dataset.kind);
@@ -66,6 +72,10 @@
 
         show();
     </script>
+
+    <!-- Bootstrap scripts and the theme behavior shared by both pages. -->
+    <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="theme.js"></script>
 </body>
 
 </html>

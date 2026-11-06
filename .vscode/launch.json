@@ -2,6 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
+            // Starts the local Python server in the VS Code debugger.
             "name": "Python: main.py",
             "type": "debugpy",
             "request": "launch",
