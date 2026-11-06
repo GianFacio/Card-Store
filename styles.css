@@ -1098,9 +1098,9 @@ h2 {
         font-size: 22px
     }
 
-    /* Keep card columns distinct and bring the next row closer on phones. */
+    /* Add breathing room between card rows while keeping mobile columns compact. */
     .products {
-        gap: 0 14px
+        gap: 20px 14px
     }
 
     /* Center button labels vertically and horizontally while keeping the mobile size compact. */
