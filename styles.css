@@ -626,7 +626,9 @@ h2 {
 }
 
 .photo-zoom-dialog {
-    position: relative;
+    position: fixed;
+    inset: 0;
+    margin: auto;
     width: min(94vw, 1400px);
     max-width: none;
     max-height: 94dvh;
@@ -1487,7 +1489,9 @@ h2 {
 }
 
 .community-card-detail-dialog {
-    position: relative;
+    position: fixed;
+    inset: 0;
+    margin: auto;
     width: min(96vw, 1180px);
     max-width: none;
     max-height: 94dvh;
