@@ -215,6 +215,26 @@ adminAccessToggle.addEventListener('click', async () => {
     }
 });
 
+const adminClient = window.getStoreSupabaseClient();
+adminClient.auth.onAuthStateChange((_event, session) => {
+    if (!session) {
+        setStoreAdminAccess(false);
+        return;
+    }
+
+    window.setTimeout(async () => {
+        try {
+            const { data, error } = await adminClient.rpc('is_store_admin');
+            if (error) throw error;
+            setStoreAdminAccess(data === true);
+        } catch (error) {
+            setStoreAdminAccess(false);
+            adminAccessToggle.title = `Unable to verify admin access: ${error.message}`;
+            console.error('Unable to verify admin access:', error);
+        }
+    }, 0);
+});
+
 (async function restoreAdminAccess() {
     try {
         const client = window.getStoreSupabaseClient();

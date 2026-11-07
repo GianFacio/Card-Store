@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="A public collector profile and card collection.">
+    <title>Collector Profile | Beans Jeans Card Club</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://tmskcpzbcszpxydrpepj.supabase.co" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+    <!-- Community profile controls stay separate from the store's admin account. -->
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a class="site-brand" href="index.html">Beans Jeans Card Club</a>
+            <div class="header-actions">
+                <button type="button" class="btn-outline theme-secondary btn-icon theme-toggle" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
+                    <i class="bi bi-circle-half header-icon" aria-hidden="true"></i>
+                </button>
+                <a class="community-header-link" href="community.html">Collectors</a>
+                <button type="button" id="community-join-trigger" class="community-header-link">Sign In / Join</button>
+                <a id="community-my-profile" class="community-header-link" href="profile.html" hidden>My profile</a>
+                <button type="button" id="community-sign-out" class="community-header-link" hidden>Sign out</button>
+                <button type="button" id="admin-access-toggle" class="btn-outline theme-secondary btn-icon theme-toggle" aria-label="Admin sign in" title="Admin sign in">
+                    <svg class="header-icon header-lock-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4M4.5 7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7zM8 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Member profiles and card collections are public; editing remains owner/admin-only. -->
+    <main class="community-page profile-page">
+        <a class="community-back-link" href="community.html">&larr; Find collectors</a>
+        <p id="profile-notice" class="community-notice" role="status" aria-live="polite"></p>
+
+        <section id="profile-summary" class="profile-summary" hidden>
+            <div id="profile-avatar" class="community-avatar profile-avatar" aria-hidden="true"></div>
+            <div class="profile-summary-text">
+                <p id="profile-username" class="community-eyebrow"></p>
+                <h1 id="profile-display-name"></h1>
+                <p id="profile-bio" class="profile-bio"></p>
+                <div class="profile-badges">
+                    <span id="profile-visibility" class="profile-visibility" hidden></span>
+                    <button id="profile-edit-toggle" class="profile-visibility profile-edit-toggle" type="button" aria-expanded="false" hidden>Edit</button>
+                    <button id="profile-add-card-toggle" class="profile-visibility profile-edit-toggle" type="button" aria-expanded="false" hidden>Add card</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="profile-editor" class="community-panel" hidden>
+            <h2>Edit your profile</h2>
+            <form id="profile-edit-form" class="community-form">
+                <label>Display name
+                    <input name="display_name" type="text" minlength="2" maxlength="40" required>
+                </label>
+                <label>Username
+                    <input name="username" type="text" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" required>
+                </label>
+                <label>Bio
+                    <textarea name="bio" rows="3" maxlength="240" placeholder="Tell other collectors a little about yourself"></textarea>
+                </label>
+                <label>Profile photo
+                    <input name="avatar" type="file" accept="image/jpeg,image/png,image/webp">
+                </label>
+                <p class="community-field-hint">Profiles and card collections are public. Only you and the store admin can change your profile and cards.</p>
+                <p id="profile-edit-message" class="community-form-message" role="status" aria-live="polite" hidden></p>
+                <button class="filter" type="submit">Save profile</button>
+            </form>
+        </section>
+
+        <section id="collection-editor" class="community-panel" hidden>
+            <h2>Add a card</h2>
+            <p>New cards are added to your collection immediately.</p>
+            <form id="community-card-form" class="community-form">
+                <label>Card name
+                    <input name="name" type="text" maxlength="120" placeholder="Set, player, and card name" required>
+                </label>
+                <label>Player or card detail
+                    <input name="detail" type="text" maxlength="80" placeholder="Player name or other detail">
+                </label>
+                <label>Grade
+                    <select name="grade" required>
+                        <option value="Raw">Raw</option>
+                        <option value="PSA 10">PSA 10</option>
+                        <option value="PSA 9">PSA 9</option>
+                        <option value="PSA 8">PSA 8</option>
+                        <option value="PSA 7">PSA 7</option>
+                        <option value="PSA 6">PSA 6</option>
+                        <option value="PSA 5">PSA 5</option>
+                        <option value="PSA 4">PSA 4</option>
+                        <option value="PSA 3">PSA 3</option>
+                        <option value="PSA 2">PSA 2</option>
+                        <option value="PSA 1">PSA 1</option>
+                    </select>
+                </label>
+                <label>Card title
+                    <input name="title" type="text" maxlength="120" required>
+                </label>
+                <label class="photo-rotation-toggle">
+                    <input name="rotation_enabled" type="checkbox">
+                    Horizontal card — show rotate control
+                </label>
+                <fieldset class="photo-edit-list">
+                    <legend>Card photos (front and back)</legend>
+                    <div class="photo-slots">
+                        <div class="photo-slot">
+                            <span class="photo-slot-title">Front</span>
+                            <button class="photo-slot-picker" type="button" data-file-input="community-add-front" aria-controls="community-add-front" aria-label="Choose front photo">
+                                <span class="photo-slot-preview">Choose front</span>
+                                <span class="photo-slot-action">Choose photo</span>
+                            </button>
+                            <input id="community-add-front" name="front_photo" class="visually-hidden-file" type="file" accept="image/jpeg,image/png,image/webp" tabindex="-1">
+                        </div>
+                        <div class="photo-slot">
+                            <span class="photo-slot-title">Back</span>
+                            <button class="photo-slot-picker" type="button" data-file-input="community-add-back" aria-controls="community-add-back" aria-label="Choose back photo">
+                                <span class="photo-slot-preview">Choose back</span>
+                                <span class="photo-slot-action">Choose photo</span>
+                            </button>
+                            <input id="community-add-back" name="back_photo" class="visually-hidden-file" type="file" accept="image/jpeg,image/png,image/webp" tabindex="-1">
+                        </div>
+                    </div>
+                    <small class="photo-help-text">Add at least one side. JPEG, PNG, or WebP, up to 5 MB each.</small>
+                </fieldset>
+                <p id="community-card-message" class="community-form-message" role="status" aria-live="polite" hidden></p>
+                <div class="profile-card-edit-actions">
+                    <button class="filter active" type="submit">Save card</button>
+                    <button id="community-card-add-cancel" class="filter" type="button">Cancel</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="profile-collection" class="profile-collection" hidden>
+            <div class="profile-collection-heading">
+                <div class="profile-collection-title-group">
+                    <h2 id="profile-collection-title">Card Collection</h2>
+                </div>
+            </div>
+            <div id="community-card-filters" class="filters" aria-label="Filter cards by grade"></div>
+            <p id="collection-notice" class="community-notice" role="status" aria-live="polite"></p>
+            <section id="community-card-grid" class="products community-card-grid" aria-label="Cards in this collection"></section>
+            <p id="community-card-empty" class="community-empty" hidden>No cards have been added to this collection yet.</p>
+        </section>
+
+        <dialog id="community-card-dialog" class="community-card-detail-dialog" aria-labelledby="community-card-detail-title">
+            <button id="community-card-detail-close" class="photo-zoom-close" type="button" aria-label="Close card details">&times;</button>
+            <div class="community-card-detail-layout">
+                <section class="community-card-detail-summary">
+                    <p id="community-card-detail-grade" class="slab-grade"></p>
+                    <h2 id="community-card-detail-title"></h2>
+                    <button id="community-card-edit-toggle" class="filter" type="button" hidden>Edit card</button>
+                    <section id="community-card-edit-panel" class="community-panel community-card-edit-panel" hidden>
+                        <form id="community-card-edit-form" class="community-form">
+                            <h2>Edit card</h2>
+                            <label>Card name
+                                <textarea name="name" rows="2" maxlength="120" required></textarea>
+                            </label>
+                            <label>Player or card detail
+                                <input name="detail" type="text" maxlength="80">
+                            </label>
+                            <label>Grade
+                                <select name="grade" required>
+                                    <option value="Raw">Raw</option>
+                                    <option value="PSA 10">PSA 10</option>
+                                    <option value="PSA 9">PSA 9</option>
+                                    <option value="PSA 8">PSA 8</option>
+                                    <option value="PSA 7">PSA 7</option>
+                                    <option value="PSA 6">PSA 6</option>
+                                    <option value="PSA 5">PSA 5</option>
+                                    <option value="PSA 4">PSA 4</option>
+                                    <option value="PSA 3">PSA 3</option>
+                                    <option value="PSA 2">PSA 2</option>
+                                    <option value="PSA 1">PSA 1</option>
+                                </select>
+                            </label>
+                            <label>Card title
+                                <input name="title" type="text" maxlength="120" required>
+                            </label>
+                            <label class="photo-rotation-toggle">
+                                <input name="rotation_enabled" type="checkbox">
+                                Horizontal card — show rotate control
+                            </label>
+                            <fieldset class="photo-edit-list" id="community-card-edit-photos">
+                                <legend>Current photos — click to replace</legend>
+                                <div class="photo-slots">
+                                    <div class="photo-slot existing-photo-slot">
+                                        <span class="photo-slot-title">Front</span>
+                                        <button class="photo-slot-picker" type="button" data-file-input="community-edit-front" aria-controls="community-edit-front" aria-label="Choose or replace front photo">
+                                            <span class="photo-slot-preview">Choose front</span>
+                                            <span class="photo-slot-action">Choose photo</span>
+                                        </button>
+                                        <input id="community-edit-front" name="front_photo" class="visually-hidden-file" type="file" accept="image/jpeg,image/png,image/webp" tabindex="-1">
+                                        <button class="photo-remove-control" type="button" data-remove-side="front" aria-pressed="false">Remove front</button>
+                                    </div>
+                                    <div class="photo-slot existing-photo-slot">
+                                        <span class="photo-slot-title">Back</span>
+                                        <button class="photo-slot-picker" type="button" data-file-input="community-edit-back" aria-controls="community-edit-back" aria-label="Choose or replace back photo">
+                                            <span class="photo-slot-preview">Choose back</span>
+                                            <span class="photo-slot-action">Choose photo</span>
+                                        </button>
+                                        <input id="community-edit-back" name="back_photo" class="visually-hidden-file" type="file" accept="image/jpeg,image/png,image/webp" tabindex="-1">
+                                        <button class="photo-remove-control" type="button" data-remove-side="back" aria-pressed="false">Remove back</button>
+                                    </div>
+                                </div>
+                                <small class="photo-help-text">Click a photo to replace it. JPEG, PNG, or WebP, up to 5 MB each.</small>
+                            </fieldset>
+                            <p id="community-card-linked-photos" class="community-field-hint" hidden></p>
+                            <p id="community-card-edit-message" class="community-form-message" role="status" aria-live="polite" hidden></p>
+                            <div class="profile-card-edit-actions">
+                                <button class="filter active" type="submit">Save</button>
+                                <button id="community-card-edit-cancel" class="filter" type="button">Cancel</button>
+                                <button id="community-card-edit-delete" class="filter community-card-delete" type="button">Delete</button>
+                            </div>
+                        </form>
+                    </section>
+                </section>
+                <section class="slab-viewer community-card-detail-viewer" aria-label="Card photos">
+                    <button id="community-card-previous-photo" class="slab-arrow" type="button" aria-label="Previous photo">&lsaquo;</button>
+                    <figure>
+                        <button id="community-card-zoom-trigger" class="photo-zoom-trigger" type="button" aria-label="Zoom in on card photo">
+                            <img id="community-card-detail-image" alt="">
+                        </button>
+                        <button id="community-card-rotate" class="side-rotate-button" type="button" aria-label="Rotate photo sideways" title="Rotate photo sideways" aria-pressed="false" hidden>
+                            <svg class="rotate-icon" width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z"/>
+                                <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466"/>
+                            </svg>
+                        </button>
+                        <figcaption id="community-card-photo-count" class="photo-count" aria-live="polite"></figcaption>
+                    </figure>
+                    <button id="community-card-next-photo" class="slab-arrow" type="button" aria-label="Next photo">&rsaquo;</button>
+                </section>
+            </div>
+            <dialog id="community-card-zoom-dialog" class="photo-zoom-dialog" aria-label="Zoomed card photo">
+                <button id="community-card-zoom-close" class="photo-zoom-close" type="button" aria-label="Close zoomed photo">&times;</button>
+                <img id="community-card-zoom-image" alt="">
+            </dialog>
+        </dialog>
+    </main>
+
+    <!-- Reuse the same account dialog as the collector directory. -->
+    <dialog id="community-auth-dialog" class="store-modal community-auth-dialog" aria-labelledby="community-auth-title">
+        <div class="store-modal-content">
+            <div class="store-modal-header">
+                <h2 id="community-auth-title">Sign In</h2>
+                <button type="button" class="store-modal-close" data-close-community-auth aria-label="Close dialog">&times;</button>
+            </div>
+            <form id="community-signin-form" class="admin-form community-auth-form">
+                <label>Username
+                    <input name="username" type="text" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" autocomplete="username" required>
+                    <span class="community-field-hint">3–24 letters, numbers, or underscores. Your username appears on your public profile.</span>
+                </label>
+                <label>Password
+                    <span class="password-field">
+                        <input id="community-signin-password" name="password" type="password" autocomplete="current-password" required>
+                        <button class="filter password-toggle community-password-toggle" type="button" aria-label="Show password" title="Show password" aria-controls="community-signin-password" aria-pressed="false">
+                            <svg class="password-eye" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                            </svg>
+                            <svg class="password-eye-slash" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7 7 0 0 0-2.79.588l.77.771A6 6 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755q-.247.248-.517.486z"/>
+                                <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"/>
+                                <path d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z"/>
+                            </svg>
+                        </button>
+                    </span>
+                </label>
+                <p class="community-form-message" role="status" aria-live="polite" hidden></p>
+                <div class="store-modal-actions">
+                    <button class="store-modal-button store-modal-cancel" type="button" data-switch-community-auth="signup">Create account</button>
+                    <button class="store-modal-button store-modal-confirm" type="submit">Sign In</button>
+                </div>
+            </form>
+            <form id="community-signup-form" class="admin-form community-auth-form" hidden>
+                <label>Display name
+                    <input name="display_name" type="text" minlength="2" maxlength="40" autocomplete="name" required>
+                </label>
+                <label>Username
+                    <input name="username" type="text" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" autocomplete="username" required>
+                </label>
+                <label>Email
+                    <input name="email" type="email" autocomplete="email" required>
+                </label>
+                <label>Password
+                    <span class="password-field">
+                        <input id="community-signup-password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+                        <button class="filter password-toggle community-password-toggle" type="button" aria-label="Show password" title="Show password" aria-controls="community-signup-password" aria-pressed="false">
+                            <svg class="password-eye" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                            </svg>
+                            <svg class="password-eye-slash" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7 7 0 0 0-2.79.588l.77.771A6 6 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755q-.247.248-.517.486z"/>
+                                <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"/>
+                                <path d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z"/>
+                            </svg>
+                        </button>
+                    </span>
+                </label>
+                <p class="community-form-message" role="status" aria-live="polite" hidden></p>
+                <div class="store-modal-actions">
+                    <button class="store-modal-button store-modal-cancel" type="button" data-switch-community-auth="signin">Sign In</button>
+                    <button class="store-modal-button store-modal-confirm" type="submit">Create account</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="store-data.js"></script>
+    <script src="store-admin-tools.js"></script>
+    <script src="admin-access.js"></script>
+    <script src="community-navigation.js"></script>
+    <script src="community-access.js"></script>
+    <script src="community-profile.js"></script>
+    <script src="theme.js"></script>
+</body>
+
+</html>

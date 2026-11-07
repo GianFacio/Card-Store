@@ -22,6 +22,7 @@
                 <button type="button" class="btn-outline theme-secondary btn-icon theme-toggle" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
                     <i class="bi bi-circle-half header-icon" aria-hidden="true"></i>
                 </button>
+                <a class="community-header-link" href="community.html">Collectors</a>
                 <button type="button" id="admin-access-toggle" class="btn-outline theme-secondary btn-icon theme-toggle" aria-label="Admin sign in" title="Admin sign in">
                     <svg class="header-icon header-lock-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                         <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4M4.5 7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7zM8 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/>
@@ -35,57 +36,20 @@
             </div>
         </div>
     </header>
-    <!-- Grade filters are generated from the card catalog. -->
-    <main id="shop">
-        <h2>Card Collection</h2>
-        <div class="filters" id="filters"></div>
-        <div class="products" id="products"></div>
-
+    <!-- The landing page introduces the club and points visitors toward collectors. -->
+    <main class="home-hero">
+        <h1>Welcome to Beans Jeans Card Club</h1>
+        <p class="home-hero-description">A place for collectors to share the cards they love and discover the people behind the collections.</p>
+        <div class="home-hero-actions">
+            <a class="home-hero-primary" href="community.html">Search collectors</a>
+            <a class="home-hero-secondary" href="community.html?signin=1">Sign In / Join</a>
+        </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="store-data.js"></script>
-    <script src="store-admin-tools.js"></script>
     <script src="admin-access.js"></script>
-    <script>
-        // Load the current catalog and render the public collection.
-        window.loadStoreCards().then(items => {
-            const products = document.querySelector('#products');
-            const filters = document.querySelector('#filters');
-
-            // Build one filter for each grade found in the catalog.
-            const kinds = ['all', ...new Set(items.map(item => item.grade))];
-            filters.innerHTML = kinds.map(kind =>
-                `<button class="filter${kind === 'all' ? ' active' : ''}" data-kind="${kind}">${kind === 'all' ? 'All cards' : kind}</button>`
-            ).join('');
-
-            // Prioritize the first visible card and defer offscreen photos without reducing quality.
-            // Render matching cards as clickable collection tiles.
-            function show(kind = 'all') {
-                products.innerHTML = items.filter(item => kind === 'all' || item.grade === kind).map((item, index) =>
-                    `<article class="product">
-                        <a class="product-image-button" href="collection.html?card=${encodeURIComponent(item.id)}" aria-label="View photos of ${window.escapeStoreHTML(item.name)}">
-                            <img src="${window.escapeStoreHTML(item.photos[0].src)}" alt="${window.escapeStoreHTML(item.photos[0].alt)}" loading="${index === 0 ? 'eager' : 'lazy'}" fetchpriority="${index === 0 ? 'high' : 'auto'}" decoding="async">
-                        </a>
-                        <div class="product-meta">
-                            <span class="grade-badge ${item.grade === 'Raw' ? 'grade-badge-raw' : item.grade === 'PSA 10' ? 'grade-badge-psa10' : 'grade-badge-graded'}">${window.escapeStoreHTML(item.grade)}</span>
-                            <div class="detail">${window.escapeStoreHTML(item.detail)}</div>
-                        </div>
-                        <h3>${window.escapeStoreHTML(item.name)}</h3>
-                    </article>`
-                ).join('');
-            }
-
-            // Update the active grade and refresh the visible cards after a filter click.
-            filters.querySelectorAll('.filter').forEach(button => button.addEventListener('click', () => {
-                filters.querySelector('.filter.active').classList.remove('active');
-                button.classList.add('active');
-                show(button.dataset.kind);
-            }));
-
-            show();
-        }).catch(error => window.showStoreError(document.querySelector('#shop'), error));
-    </script>
+    <script src="community-navigation.js"></script>
 
     <!-- Shared light/dark theme behavior. -->
     <script src="theme.js"></script>

@@ -16,6 +16,8 @@ class StorefrontHandler(BaseHTTPRequestHandler):
 			"/": ("index.html", "text/html; charset=utf-8"),
 			"/index.html": ("index.html", "text/html; charset=utf-8"),
 			"/collection.html": ("collection.html", "text/html; charset=utf-8"),
+			"/community.html": ("community.html", "text/html; charset=utf-8"),
+			"/profile.html": ("profile.html", "text/html; charset=utf-8"),
 			"/admin.html": ("admin.html", "text/html; charset=utf-8"),
 			"/styles.css": ("styles.css", "text/css; charset=utf-8"),
 			"/store-data.js": ("store-data.js", "text/javascript; charset=utf-8"),
@@ -23,6 +25,11 @@ class StorefrontHandler(BaseHTTPRequestHandler):
 			"/supabase-config.js": ("supabase-config.js", "text/javascript; charset=utf-8"),
 			"/admin.js": ("admin.js", "text/javascript; charset=utf-8"),
 			"/admin-access.js": ("admin-access.js", "text/javascript; charset=utf-8"),
+			"/community-access.js": ("community-access.js", "text/javascript; charset=utf-8"),
+			"/community-directory.js": ("community-directory.js", "text/javascript; charset=utf-8"),
+			"/community-profile.js": ("community-profile.js", "text/javascript; charset=utf-8"),
+			"/community-navigation.js": ("community-navigation.js", "text/javascript; charset=utf-8"),
+			"/supabase/config.toml": ("supabase/config.toml", "text/plain; charset=utf-8"),
 			"/theme.js": ("theme.js", "text/javascript; charset=utf-8"),
 		}
 		if request_path in assets:

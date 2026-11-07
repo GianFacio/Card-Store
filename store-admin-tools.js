@@ -1,4 +1,16 @@
 // Shared storage helpers used by the add-card and inline-edit forms.
+window.getCardPhotoSlots = function (photos) {
+    const assigned = new Set();
+    return ['Front', 'Back'].map((side, position) => {
+        let index = photos.findIndex((photo, photoIndex) =>
+            !assigned.has(photoIndex) && photo.side?.toLowerCase() === side.toLowerCase());
+        if (index < 0 && photos[position] && !photos[position].side && !assigned.has(position)) index = position;
+        if (index < 0) return { side, photo: null, index: -1 };
+        assigned.add(index);
+        return { side, photo: photos[index], index };
+    });
+};
+
 window.setupCardPhotoSlotInputs = function (container) {
     const previewUrls = new Map();
 
